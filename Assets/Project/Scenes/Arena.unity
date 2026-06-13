@@ -246,6 +246,37 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!1 &127525451
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 127525452}
+  m_Layer: 0
+  m_Name: Bullets Pool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &127525452
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 127525451}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &547531086
 GameObject:
   m_ObjectHideFlags: 0
@@ -356,6 +387,37 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: -0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &637140487
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 637140488}
+  m_Layer: 0
+  m_Name: Enemies Pool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &637140488
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 637140487}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -560,6 +622,12 @@ MonoBehaviour:
   _heroConfig: {fileID: 11400000, guid: c08b7e4ff17e1b4438c9c7ae08c6c1cd, type: 2}
   _heroViewPrefab: {fileID: 7593563798392002025, guid: 355d98916ec452a43aaf7f3ddccbf549, type: 3}
   _heroSpawnPoint: {fileID: 1091746003}
+  _bulletPrefab: {fileID: 7188943504788321120, guid: 99000734532235048b7cf1140d653201, type: 3}
+  _bulletsParent: {fileID: 127525452}
+  _enemyPrefab: {fileID: 1868490016661700242, guid: cc19c8b1c4e03d34b9b947cf58972bbd, type: 3}
+  _enemiesParent: {fileID: 637140488}
+  _initialBulletCapacity: 64
+  _initialEnemyCapacity: 64
 --- !u!114 &2008188743
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -696,3 +764,5 @@ SceneRoots:
   - {fileID: 547531090}
   - {fileID: 2008188744}
   - {fileID: 1091746003}
+  - {fileID: 127525452}
+  - {fileID: 637140488}
