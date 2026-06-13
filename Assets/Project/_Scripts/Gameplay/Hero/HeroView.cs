@@ -13,15 +13,9 @@ namespace ArenaShooter.Gameplay.Hero
 
         private void OnValidate()
         {
-            if (_rigidbody == null)
-            {
-                _rigidbody = GetComponent<Rigidbody>();
-            }
+            if (!_rigidbody) _rigidbody = GetComponent<Rigidbody>();
             
-            if (_firePoint == null)
-            {
-                Debug.LogError("[HeroView] FirePoint Transform is not assigned in the Inspector!", this);
-            }
+            if (!_firePoint) Debug.LogError("[HeroView] FirePoint Transform is not assigned in the Inspector!", this);
         }
     }
 }
