@@ -29,7 +29,7 @@ namespace ArenaShooter.Infrastructure.Pooling
 
         public void Return(T element)
         {
-            if (element == null)
+            if (!element)
             {
                 Debug.LogError("[ObjectPool] Attempted to return a null element to the pool.");
                 return;
