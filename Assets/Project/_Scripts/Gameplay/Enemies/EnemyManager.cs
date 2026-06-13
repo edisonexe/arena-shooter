@@ -45,6 +45,8 @@ namespace ArenaShooter.Gameplay.Enemies
 
                 if (!enemy.IsActive)
                 {
+                    _signalBus.Fire(new EnemyKilledSignal(enemy.transform.position, enemy.Config.XpValue));
+                    
                     _activeEnemies.RemoveAt(i);
                     _enemyPool.Return(enemy);
                     continue;

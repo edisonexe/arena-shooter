@@ -8,9 +8,11 @@ namespace ArenaShooter.Configs
         [SerializeField, Min(0.01f)] private float _moveSpeed = 3f;
         [SerializeField, Min(0.01f)] private float _maxHealth = 30f;
         [SerializeField, Min(0.01f)] private float _damage = 10f;
-
+        [SerializeField, Min(0)] private int _xpValue = 10;
+        
         public float MoveSpeed => _moveSpeed;
         public float MaxHealth => _maxHealth;
         public float Damage => _damage;
+        public int XpValue => _xpValue;
     }
 }

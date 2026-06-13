@@ -6,6 +6,7 @@ using ArenaShooter.Infrastructure.Pooling;
 using ArenaShooter.Infrastructure.Signals;
 using ArenaShooter.Services.Combat;
 using ArenaShooter.Services.Input;
+using ArenaShooter.Services.Progression;
 using ArenaShooter.UI;
 using UnityEngine;
 using Zenject;
@@ -67,6 +68,8 @@ namespace ArenaShooter.Infrastructure.DI
             
             Container.BindInstance(_hudView).AsSingle();
             Container.BindInterfacesAndSelfTo<GameplayHUDPresenter>().AsSingle().NonLazy();
+            
+            Container.BindInterfacesAndSelfTo<LevelingService>().AsSingle().NonLazy();
         }
 
         private void ValidateInInspector()
