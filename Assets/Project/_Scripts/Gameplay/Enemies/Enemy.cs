@@ -1,14 +1,17 @@
 ﻿using System;
 using ArenaShooter.Configs;
+using ArenaShooter.Gameplay.Combat;
 using ArenaShooter.Infrastructure.Pooling;
 using UnityEngine;
 
 namespace ArenaShooter.Gameplay.Enemies
 {
-    public class Enemy : MonoBehaviour, IPoolable<Enemy>
+    public class Enemy : MonoBehaviour, IPoolable<Enemy>, IDamageable
     {
         [SerializeField] private EnemyConfig _config;
 
+        private float _currentHealth;
+        
         public bool IsActive { get; private set; }
         public EnemyConfig Config => _config;
 
@@ -20,6 +23,7 @@ namespace ArenaShooter.Gameplay.Enemies
         public void Spawn()
         {
             IsActive = true;
+            _currentHealth = _config.MaxHealth;
         }
 
         public void Despawn()
@@ -27,6 +31,17 @@ namespace ArenaShooter.Gameplay.Enemies
             IsActive = false;
         }
 
+        public void TakeDamage(float amount)
+        {
+            if (!IsActive) return;
+
+            _currentHealth -= amount;
+            if (_currentHealth <= 0f)
+            {
+                Despawn();
+            }
+        }
+        
         public void TickUpdate(Vector3 targetPosition, float deltaTime)
         {
             Vector3 currentPosition = transform.position;

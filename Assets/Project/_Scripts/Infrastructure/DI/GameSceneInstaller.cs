@@ -3,6 +3,7 @@ using ArenaShooter.Gameplay.Enemies;
 using ArenaShooter.Gameplay.Hero;
 using ArenaShooter.Gameplay.Weapons;
 using ArenaShooter.Infrastructure.Pooling;
+using ArenaShooter.Services.Combat;
 using ArenaShooter.Services.Input;
 using UnityEngine;
 using Zenject;
@@ -38,6 +39,7 @@ namespace ArenaShooter.Infrastructure.DI
                 .AsSingle()
                 .WithArguments(_bulletPrefab, _bulletsParent, _initialBulletCapacity);
             
+            Container.Bind<SpatialCollisionService>().AsSingle();
             Container.BindInterfacesAndSelfTo<BulletManager>().AsSingle().NonLazy();
             Container.Bind<AutoCombatWeapon>().AsSingle();
             

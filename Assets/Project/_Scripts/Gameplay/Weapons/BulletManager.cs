@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ArenaShooter.Infrastructure.Pooling;
+using ArenaShooter.Services.Combat;
 using UnityEngine;
 using Zenject;
 
@@ -9,11 +10,15 @@ namespace ArenaShooter.Gameplay.Weapons
     public class BulletManager : ITickable
     {
         private readonly ObjectPool<Bullet> _bulletPool;
-        private readonly List<Bullet> _activeBullets = new List<Bullet>(128);
-
-        public BulletManager(ObjectPool<Bullet> bulletPool)
+        private readonly SpatialCollisionService _collisionService;
+        private readonly List<Bullet> _activeBullets = new(128);
+        
+        private const float BulletDamage = 10f;
+        
+        public BulletManager(ObjectPool<Bullet> bulletPool, SpatialCollisionService collisionService)
         {
-            _bulletPool = bulletPool ?? throw new ArgumentNullException(nameof(bulletPool), "[BulletManager] Pool cannot be null!");
+            _bulletPool = bulletPool ?? throw new ArgumentNullException(nameof(bulletPool));
+            _collisionService = collisionService ?? throw new ArgumentNullException(nameof(collisionService));
         }
 
         public void Tick()
@@ -33,6 +38,12 @@ namespace ArenaShooter.Gameplay.Weapons
 
                 bullet.TickUpdate(deltaTime);
 
+                if (_collisionService.CheckBulletHit(bullet.transform.position, BulletDamage))
+                {
+                    bullet.Despawn();
+                    continue;
+                }
+                
                 if (bullet.transform.position.sqrMagnitude > 2500f)
                 {
                     bullet.Despawn();
