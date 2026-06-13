@@ -9,9 +9,11 @@ namespace ArenaShooter.Gameplay.Hero
         private readonly Rigidbody _rigidbody;
         private readonly HeroConfig _config;
 
-        public HeroMover(Rigidbody rigidbody, HeroConfig config)
+        public HeroMover(HeroView heroView, HeroConfig config)
         {
-            _rigidbody = rigidbody ?? throw new ArgumentNullException(nameof(rigidbody), "[HeroMover] Rigidbody cannot be null!");
+            if (!heroView) throw new ArgumentNullException(nameof(heroView), "[HeroMover] HeroView cannot be null!");
+            
+            _rigidbody = heroView.Rigidbody ?? throw new ArgumentNullException(nameof(heroView.Rigidbody), "[HeroMover] Rigidbody is missing on HeroView!");
             _config = config ?? throw new ArgumentNullException(nameof(config), "[HeroMover] HeroConfig cannot be null!");
         }
 

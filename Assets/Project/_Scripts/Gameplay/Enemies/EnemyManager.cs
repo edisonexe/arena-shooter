@@ -50,6 +50,28 @@ namespace ArenaShooter.Gameplay.Enemies
             }
         }
 
+        public Enemy GetClosestEnemy(Vector3 position, float maxRadius)
+        {
+            Enemy closestEnemy = null;
+            float closestSqrDistance = maxRadius * maxRadius;
+
+            for (int i = 0; i < _activeEnemies.Count; i++)
+            {
+                Enemy enemy = _activeEnemies[i];
+                
+                if (!enemy.IsActive) continue;
+
+                float sqrDistance = (enemy.transform.position - position).sqrMagnitude;
+                if (sqrDistance < closestSqrDistance)
+                {
+                    closestSqrDistance = sqrDistance;
+                    closestEnemy = enemy;
+                }
+            }
+
+            return closestEnemy;
+        }
+        
         private void SpawnEnemyWave()
         {
             Vector2 randomPoint = UnityEngine.Random.insideUnitCircle.normalized * 15f;

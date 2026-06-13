@@ -1,4 +1,5 @@
 ﻿using ArenaShooter.Configs;
+using ArenaShooter.Gameplay.Enemies;
 using ArenaShooter.Gameplay.Hero;
 using ArenaShooter.Gameplay.Weapons;
 using ArenaShooter.Infrastructure.Pooling;
@@ -18,9 +19,12 @@ namespace ArenaShooter.Infrastructure.DI
         [SerializeField] private Transform _heroSpawnPoint;
         [SerializeField] private Bullet _bulletPrefab;
         [SerializeField] private Transform _bulletsParent;
+        [SerializeField] private Enemy _enemyPrefab;
+        [SerializeField] private Transform _enemiesParent;
 
         [Header("Pool Capacities")]
-        [SerializeField] private int _initialBulletCapacity = 64;
+        [SerializeField] private int _initialBulletCapacity = 128;
+        [SerializeField] private int _initialEnemyCapacity = 64;
         
         public override void InstallBindings()
         {
@@ -29,28 +33,28 @@ namespace ArenaShooter.Infrastructure.DI
             Container.BindInstance(_heroConfig).AsSingle();
             
             Container.BindInterfacesAndSelfTo<NewInputService>().AsSingle().NonLazy();
-
+            
             Container.Bind<ObjectPool<Bullet>>()
                 .AsSingle()
                 .WithArguments(_bulletPrefab, _bulletsParent, _initialBulletCapacity);
             
             Container.BindInterfacesAndSelfTo<BulletManager>().AsSingle().NonLazy();
+            Container.Bind<AutoCombatWeapon>().AsSingle();
             
-            HeroView heroViewInstance = Container.InstantiatePrefabForComponent<HeroView>(
-                _heroViewPrefab, 
-                _heroSpawnPoint.position, 
-                Quaternion.identity, 
-                null
-            );
-            Container.BindInstance(heroViewInstance).AsSingle();
-
-            Container.Bind<HeroMover>()
+            Container.Bind<ObjectPool<Enemy>>()
                 .AsSingle()
-                .WithArguments(heroViewInstance.Rigidbody);
+                .WithArguments(_enemyPrefab, _enemiesParent, _initialEnemyCapacity);
+            
+            Container.BindInterfacesAndSelfTo<EnemyManager>().AsSingle().NonLazy();
+            
+            Container.Bind<HeroView>()
+                .FromComponentInNewPrefab(_heroViewPrefab)
+                .UnderTransform(_heroSpawnPoint)
+                .AsSingle();
 
-            Container.BindInterfacesAndSelfTo<HeroEntity>()
-                .AsSingle()
-                .NonLazy();
+            Container.Bind<HeroMover>().AsSingle();
+
+            Container.BindInterfacesAndSelfTo<HeroEntity>().AsSingle().NonLazy();
         }
 
         private void ValidateInInspector()
@@ -60,6 +64,8 @@ namespace ArenaShooter.Infrastructure.DI
             if (!_heroSpawnPoint) Debug.LogError("[GameSceneInstaller] HeroSpawnPoint Transform is not assigned in the Inspector!", this);
             if (!_bulletPrefab) Debug.LogError("[GameSceneInstaller] BulletPrefab is not assigned!", this);
             if (!_bulletsParent) Debug.LogError("[GameSceneInstaller] BulletsParent is not assigned!", this);
+            if (!_enemyPrefab) Debug.LogError("[GameSceneInstaller] EnemyPrefab is not assigned!", this);
+            if (!_enemiesParent) Debug.LogError("[GameSceneInstaller] EnemiesParent is not assigned!", this);
         }
     }
 }
