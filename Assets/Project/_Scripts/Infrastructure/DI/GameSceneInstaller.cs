@@ -3,6 +3,7 @@ using ArenaShooter.Gameplay.Enemies;
 using ArenaShooter.Gameplay.Hero;
 using ArenaShooter.Gameplay.Weapons;
 using ArenaShooter.Infrastructure.Pooling;
+using ArenaShooter.Infrastructure.Signals;
 using ArenaShooter.Services.Combat;
 using ArenaShooter.Services.Input;
 using UnityEngine;
@@ -12,43 +13,46 @@ namespace ArenaShooter.Infrastructure.DI
 {
     public class GameSceneInstaller : MonoInstaller
     {
-        [Header("Configs")]
-        [SerializeField] private HeroConfig _heroConfig;
+        [Header("Configs")] [SerializeField] private HeroConfig _heroConfig;
 
-        [Header("Prefabs & Spawn Points")]
-        [SerializeField] private HeroView _heroViewPrefab;
+        [Header("Prefabs & Spawn Points")] [SerializeField]
+        private HeroView _heroViewPrefab;
+
         [SerializeField] private Transform _heroSpawnPoint;
         [SerializeField] private Bullet _bulletPrefab;
         [SerializeField] private Transform _bulletsParent;
         [SerializeField] private Enemy _enemyPrefab;
         [SerializeField] private Transform _enemiesParent;
 
-        [Header("Pool Capacities")]
-        [SerializeField] private int _initialBulletCapacity = 128;
+        [Header("Pool Capacities")] [SerializeField]
+        private int _initialBulletCapacity = 128;
+
         [SerializeField] private int _initialEnemyCapacity = 64;
-        
+
         public override void InstallBindings()
         {
             ValidateInInspector();
-            
+
             Container.BindInstance(_heroConfig).AsSingle();
-            
+
             Container.BindInterfacesAndSelfTo<NewInputService>().AsSingle().NonLazy();
+
+            Container.Bind<SignalBus>().AsSingle();
             
             Container.Bind<ObjectPool<Bullet>>()
                 .AsSingle()
                 .WithArguments(_bulletPrefab, _bulletsParent, _initialBulletCapacity);
-            
+
             Container.Bind<SpatialCollisionService>().AsSingle();
             Container.BindInterfacesAndSelfTo<BulletManager>().AsSingle().NonLazy();
             Container.Bind<AutoCombatWeapon>().AsSingle();
-            
+
             Container.Bind<ObjectPool<Enemy>>()
                 .AsSingle()
                 .WithArguments(_enemyPrefab, _enemiesParent, _initialEnemyCapacity);
-            
+
             Container.BindInterfacesAndSelfTo<EnemyManager>().AsSingle().NonLazy();
-            
+
             Container.Bind<HeroView>()
                 .FromComponentInNewPrefab(_heroViewPrefab)
                 .UnderTransform(_heroSpawnPoint)
