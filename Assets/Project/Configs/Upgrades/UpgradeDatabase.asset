@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f444782c1f5447e80cb3f17d95dfc93, type: 3}
+  m_Name: UpgradeDatabase
+  m_EditorClassIdentifier: Assembly-CSharp::ArenaShooter.Configs.Upgrades.UpgradeDatabase
+  _allUpgrades:
+  - {fileID: 11400000, guid: 2ba307d93deb7f54fb3b272b1dc90481, type: 2}
+  - {fileID: 11400000, guid: b72e7282786425f4daaac1212bf65143, type: 2}
+  - {fileID: 11400000, guid: 70aa7e4fc26805443942a46f4ba9b535, type: 2}

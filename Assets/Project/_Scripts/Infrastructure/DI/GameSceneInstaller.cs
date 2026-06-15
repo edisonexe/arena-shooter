@@ -1,4 +1,5 @@
 ﻿using ArenaShooter.Configs;
+using ArenaShooter.Configs.Upgrades;
 using ArenaShooter.Gameplay.Enemies;
 using ArenaShooter.Gameplay.Hero;
 using ArenaShooter.Gameplay.Weapons;
@@ -32,6 +33,9 @@ namespace ArenaShooter.Infrastructure.DI
 
         [Header("UI Views")]
         [SerializeField] private GameplayHUDView _hudView;
+        
+        [Header("Progression Databases")]
+        [SerializeField] private UpgradeDatabase _upgradeDatabase;
         
         public override void InstallBindings()
         {
@@ -69,6 +73,9 @@ namespace ArenaShooter.Infrastructure.DI
             Container.BindInstance(_hudView).AsSingle();
             Container.BindInterfacesAndSelfTo<GameplayHUDPresenter>().AsSingle().NonLazy();
             
+            Container.BindInstance(_upgradeDatabase).AsSingle();
+            Container.Bind<HeroStatsModifierService>().AsSingle();
+            
             Container.BindInterfacesAndSelfTo<LevelingService>().AsSingle().NonLazy();
         }
 
@@ -82,6 +89,7 @@ namespace ArenaShooter.Infrastructure.DI
             if (!_enemyPrefab) Debug.LogError("[GameSceneInstaller] EnemyPrefab is not assigned!", this);
             if (!_enemiesParent) Debug.LogError("[GameSceneInstaller] EnemiesParent is not assigned!", this);
             if (!_hudView) Debug.LogError("[GameSceneInstaller] HUDView is not assigned!", this);
+            if (!_upgradeDatabase) Debug.LogError("[GameSceneInstaller] UpgradeDatabase is not assigned!", this);
         }
     }
 }
