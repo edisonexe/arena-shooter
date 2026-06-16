@@ -10,6 +10,8 @@ namespace ArenaShooter.Gameplay.Hero
         private readonly Rigidbody _rigidbody;
         private readonly HeroRuntimeStats _stats;
         
+        private const float ROT_SPEED = 15f;
+        
         public HeroMover(Rigidbody rigidbody, HeroRuntimeStats stats)
         {
             _rigidbody = rigidbody ?? throw new ArgumentNullException(nameof(rigidbody));
@@ -28,9 +30,16 @@ namespace ArenaShooter.Gameplay.Hero
             Vector3 direction = targetPosition - _rigidbody.position;
             direction.y = 0f;
 
-            if (direction.sqrMagnitude > 0.001f)
+            if (direction.sqrMagnitude > 0.01f)
             {
-                _rigidbody.rotation = Quaternion.LookRotation(direction);
+                Quaternion targetRotation = Quaternion.LookRotation(direction);
+                
+                Quaternion smoothedRotation = Quaternion.Slerp(
+                    _rigidbody.rotation, 
+                    targetRotation, 
+                    ROT_SPEED * Time.deltaTime
+                );
+                _rigidbody.MoveRotation(smoothedRotation);
             }
         }
     }
