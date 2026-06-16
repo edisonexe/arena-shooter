@@ -1,4 +1,5 @@
 ﻿using ArenaShooter.Configs;
+using ArenaShooter.Configs.Enemies;
 using ArenaShooter.Configs.Upgrades;
 using ArenaShooter.Gameplay.Enemies;
 using ArenaShooter.Gameplay.Hero;
@@ -20,6 +21,7 @@ namespace ArenaShooter.Infrastructure.DI
         [Header("Configs")] 
         [SerializeField] private HeroConfig _heroConfig;
         [SerializeField] private WeaponConfig _weaponConfig;
+        [SerializeField] private WaveConfig _waveConfig;
         
         [Header("Prefabs & Spawn Points")] [SerializeField]
         private HeroView _heroViewPrefab;
@@ -47,6 +49,7 @@ namespace ArenaShooter.Infrastructure.DI
 
             Container.BindInstance(_heroConfig).AsSingle();
             Container.BindInstance(_weaponConfig).AsSingle();
+            Container.BindInstance(_waveConfig).AsSingle();
             
             Container.BindInterfacesAndSelfTo<NewInputService>().AsSingle().NonLazy();
 
@@ -92,12 +95,15 @@ namespace ArenaShooter.Infrastructure.DI
             
             Container.BindInstance(_upgradeWindowView).AsSingle();
             Container.BindInterfacesAndSelfTo<UpgradeWindowPresenter>().AsSingle().NonLazy();
+            
+            Container.BindInterfacesAndSelfTo<EnemyWaveSpawner>().AsSingle().NonLazy();
         }
 
         private void ValidateInInspector()
         {
             if (!_heroConfig) Debug.LogError("[GameSceneInstaller] HeroConfig is not assigned!", this);
             if (!_weaponConfig) Debug.LogError("[GameSceneInstaller] WeaponConfig is not assigned!", this);
+            if (!_waveConfig) Debug.LogError("[GameSceneInstaller] WaveConfig is not assigned!", this);
             if (!_heroViewPrefab) Debug.LogError("[GameSceneInstaller] HeroViewPrefab is not assigned!", this);
             if (!_heroSpawnPoint) Debug.LogError("[GameSceneInstaller] HeroSpawnPoint Transform is not assigned!", this);
             if (!_bulletPrefab) Debug.LogError("[GameSceneInstaller] BulletPrefab is not assigned!", this);

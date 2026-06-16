@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39690f6ebf24453ca5f28f215b678633, type: 3}
   m_Name: MoveSpeedBoost
   m_EditorClassIdentifier: Assembly-CSharp::ArenaShooter.Configs.Upgrades.UpgradeConfig
-  _title: +0.5 move speed
+  _title: +100% move speed
   _description: ...
+  _icon: {fileID: 0}
   _type: 0
-  _value: 0.5
+  _value: 1

@@ -16,9 +16,6 @@ namespace ArenaShooter.Gameplay.Enemies
 
         private readonly SignalBus _signalBus;
 
-        private float _spawnTimer;
-        private readonly float _spawnInterval = 1f;
-
         private float _damageTimer;
         private const float DamageInterval = 0.5f;
         private const float AttackRadiusSqr = 1.0f;
@@ -63,21 +60,22 @@ namespace ArenaShooter.Gameplay.Enemies
                     }
                 }
             }
-
-            _spawnTimer += deltaTime;
-            if (_spawnTimer >= _spawnInterval)
-            {
-                _spawnTimer = 0f;
-                SpawnEnemyWave();
-            }
         }
 
+        
+        public void AddEnemy(Enemy enemy)
+        {
+            if (!enemy) return;
+            
+            _activeEnemies.Add(enemy);
+        }
+        
         public Enemy GetClosestEnemy(Vector3 position, float maxRadius)
         {
             Enemy closestEnemy = null;
             float closestSqrDistance = maxRadius * maxRadius;
 
-            for (int i = 0; i < _activeEnemies.Count; i++)
+            for (var i = 0; i < _activeEnemies.Count; i++)
             {
                 Enemy enemy = _activeEnemies[i];
 
@@ -92,16 +90,6 @@ namespace ArenaShooter.Gameplay.Enemies
             }
 
             return closestEnemy;
-        }
-
-        private void SpawnEnemyWave()
-        {
-            Vector2 randomPoint = UnityEngine.Random.insideUnitCircle.normalized * 15f;
-            Vector3 spawnPosition = _heroView.transform.position + new Vector3(randomPoint.x, 0f, randomPoint.y);
-
-            Enemy enemy = _enemyPool.Get();
-            enemy.Initialize(spawnPosition);
-            _activeEnemies.Add(enemy);
         }
     }
 }
