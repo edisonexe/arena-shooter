@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ArenaShooter.UI
+namespace ArenaShooter.UI.HUD
 {
     public class GameplayHUDView : MonoBehaviour
     {
@@ -16,10 +16,9 @@ namespace ArenaShooter.UI
         
         [Header("Level Bar")]
         [SerializeField] private TextMeshProUGUI _levelText;
-        
-        private float _lastHpMax = 100f;
-        private float _lastXpMax = 100f;
-        
+       
+        private const string HP_FORMAT = "{0} / {1}";
+        private const string XP_FORMAT = "{0} / {1}";
         private const string LVL_FORMAT = "LVL {0}";
         
         private void OnValidate()
@@ -31,20 +30,18 @@ namespace ArenaShooter.UI
             if (!_levelText) Debug.LogError("[GameplayHUDView] LevelText is not assigned!", this);
         }
 
-        public void UpdateHealthBar(float normalizedHealth)
+        public void UpdateHealthBar(int currentHp, int maxHp)
         {
-            _hpFillImage.fillAmount = normalizedHealth;
+            _hpFillImage.fillAmount = maxHp > 0 ? (float)currentHp / maxHp : 0f;
 
-            int currentHp = Mathf.RoundToInt(normalizedHealth * _lastHpMax);
-            _hpText.text = $"{currentHp} / {_lastHpMax}";
+            _hpText.SetText(HP_FORMAT, currentHp, maxHp);
         }
         
-        public void UpdateXpBar(float normalizedXp)
+        public void UpdateXpBar(int currentXp, int targetXp)
         {
-            _xpFillImage.fillAmount = normalizedXp;
+            _xpFillImage.fillAmount = targetXp > 0 ? (float)currentXp / targetXp : 0f;
             
-            int currentXp = Mathf.RoundToInt(normalizedXp * _lastXpMax);
-            _xpText.text = $"{currentXp}/{_lastXpMax}%";
+            _xpText.SetText(XP_FORMAT, currentXp, targetXp);
         }
 
         public void UpdateLevelText(int level)

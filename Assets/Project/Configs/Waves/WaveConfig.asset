@@ -15,4 +15,4 @@ MonoBehaviour:
   _baseSpawnInterval: 4
   _difficultyScalingFactor: 0.05
   _baseEnemiesPerWave: 5
-  _waveDurationSeconds: 60
+  _waveDurationSeconds: 30

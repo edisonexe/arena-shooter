@@ -3,7 +3,7 @@ using ArenaShooter.Gameplay.Hero;
 using ArenaShooter.Services.Progression;
 using Zenject;
 
-namespace ArenaShooter.UI
+namespace ArenaShooter.UI.HUD
 {
     public class GameplayHUDPresenter : IInitializable, IDisposable
     {
@@ -24,8 +24,8 @@ namespace ArenaShooter.UI
             
             _levelingService.OnXpChanged += OnXpChanged;
             
-            _view.UpdateHealthBar(1f);
-            _view.UpdateXpBar(0f);
+            _view.UpdateHealthBar(100, 100);
+            _view.UpdateXpBar(0, 100);
             _view.UpdateLevelText(1);
         }
 
@@ -37,12 +37,18 @@ namespace ArenaShooter.UI
 
         private void OnPlayerHealthChanged(float normalizedHp)
         {
-            _view.UpdateHealthBar(normalizedHp);
+            int maxHp = 100; 
+            int currentHp = UnityEngine.Mathf.RoundToInt(normalizedHp * maxHp);
+            
+            _view.UpdateHealthBar(currentHp, maxHp);
         }
         
         private void OnXpChanged(int currentLevel, float normalizedXp)
         {
-            _view.UpdateXpBar(normalizedXp);
+            int targetXp = 100; 
+            int currentXp = UnityEngine.Mathf.RoundToInt(normalizedXp * targetXp);
+
+            _view.UpdateXpBar(currentXp, targetXp);
             _view.UpdateLevelText(currentLevel);
         }
     }

@@ -10,6 +10,7 @@ using ArenaShooter.Services.Combat;
 using ArenaShooter.Services.Input;
 using ArenaShooter.Services.Progression;
 using ArenaShooter.UI;
+using ArenaShooter.UI.HUD;
 using ArenaShooter.UI.Upgrades;
 using UnityEngine;
 using Zenject;
@@ -37,68 +38,100 @@ namespace ArenaShooter.Infrastructure.DI
         [SerializeField] private int _initialEnemyCapacity = 64;
 
         [Header("UI Views")]
-        [SerializeField] private GameplayHUDView _hudView;
+        [SerializeField] private GameplayHUDView _gameplayHUDView;
         [SerializeField] private UpgradeWindowView _upgradeWindowView;
+        [SerializeField] private TimerView _timerView;
+        [SerializeField] private WaveHUDView _waveHUDView;
         
         [Header("Progression Databases")]
         [SerializeField] private UpgradeDatabase _upgradeDatabase;
-        
+
         public override void InstallBindings()
         {
             ValidateInInspector();
-
-            Container.BindInstance(_heroConfig).AsSingle();
-            Container.BindInstance(_weaponConfig).AsSingle();
-            Container.BindInstance(_waveConfig).AsSingle();
             
-            Container.BindInterfacesAndSelfTo<NewInputService>().AsSingle().NonLazy();
+            InstallInfrastructure();
+            InstallCoreServices();
+            InstallPools();
+            InstallGameplayManagers();
+            InstallHero();
+            InstallHUDModules();
+            InstallProgressionUI();
+        }
 
+        private void InstallInfrastructure()
+        {
             Container.Bind<SignalBus>().AsSingle();
-            
+            Container.BindInterfacesAndSelfTo<NewInputService>().AsSingle().NonLazy();
+        }
+
+        private void InstallCoreServices()
+        {
+            Container.Bind<SpatialCollisionService>().AsSingle();
+            Container.Bind<HeroStatsModifierService>().AsSingle();
+            Container.BindInterfacesAndSelfTo<LevelingService>().AsSingle().NonLazy();
+        }
+
+        private void InstallPools()
+        {
             Container.Bind<ObjectPool<Bullet>>()
                 .AsSingle()
                 .WithArguments(_bulletPrefab, _bulletsParent, _initialBulletCapacity);
 
-            Container.Bind<SpatialCollisionService>().AsSingle();
-            Container.BindInterfacesAndSelfTo<BulletManager>().AsSingle().NonLazy();
-            Container.Bind<AutoCombatWeapon>().AsSingle();
-
             Container.Bind<ObjectPool<Enemy>>()
                 .AsSingle()
                 .WithArguments(_enemyPrefab, _enemiesParent, _initialEnemyCapacity);
+        }
+        
+        private void InstallGameplayManagers()
+        {
+            Container.BindInstance(_waveConfig).AsSingle();
+            
+            Container.BindInterfacesAndSelfTo<BulletManager>().AsSingle().NonLazy();
 
             Container.BindInterfacesAndSelfTo<EnemyManager>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<EnemyWaveSpawner>().AsSingle().NonLazy();
+        }
 
+        private void InstallHero()
+        {
+            Container.BindInstance(_heroConfig).AsSingle();
+            Container.BindInstance(_weaponConfig).AsSingle();
+            Container.Bind<HeroRuntimeStats>().AsSingle();
             
             Container.Bind<HeroView>()
                 .FromComponentInNewPrefab(_heroViewPrefab)
                 .UnderTransform(_heroSpawnPoint)
                 .AsSingle();
-            
+
             Container.Bind<Rigidbody>()
                 .FromResolveGetter<HeroView>(view => view.Rigidbody)
                 .AsSingle();
             
-            Container.Bind<HeroRuntimeStats>().AsSingle();
-            
             Container.Bind<HeroMover>().AsSingle();
-
+            Container.Bind<AutoCombatWeapon>().AsSingle();
             Container.BindInterfacesAndSelfTo<HeroEntity>().AsSingle().NonLazy();
-            
-            Container.BindInstance(_hudView).AsSingle();
-            Container.BindInterfacesAndSelfTo<GameplayHUDPresenter>().AsSingle().NonLazy();
-            
-            Container.BindInstance(_upgradeDatabase).AsSingle();
-            Container.Bind<HeroStatsModifierService>().AsSingle();
-            
-            Container.BindInterfacesAndSelfTo<LevelingService>().AsSingle().NonLazy();
-            
-            Container.BindInstance(_upgradeWindowView).AsSingle();
-            Container.BindInterfacesAndSelfTo<UpgradeWindowPresenter>().AsSingle().NonLazy();
-            
-            Container.BindInterfacesAndSelfTo<EnemyWaveSpawner>().AsSingle().NonLazy();
         }
 
+        private void InstallHUDModules()
+        {
+            Container.BindInstance(_timerView).AsSingle();
+            Container.BindInterfacesAndSelfTo<TimerPresenter>().AsSingle().NonLazy();
+
+            Container.BindInstance(_waveHUDView).AsSingle();
+            Container.BindInterfacesAndSelfTo<WaveHUDPresenter>().AsSingle().NonLazy();
+            
+            Container.BindInstance(_gameplayHUDView).AsSingle();
+            Container.BindInterfacesAndSelfTo<GameplayHUDPresenter>().AsSingle().NonLazy();
+        }
+
+        private void InstallProgressionUI()
+        {
+            Container.BindInstance(_upgradeDatabase).AsSingle();
+            Container.BindInstance(_upgradeWindowView).AsSingle();
+            Container.BindInterfacesAndSelfTo<UpgradeWindowPresenter>().AsSingle().NonLazy();
+        }
+        
         private void ValidateInInspector()
         {
             if (!_heroConfig) Debug.LogError("[GameSceneInstaller] HeroConfig is not assigned!", this);
@@ -110,9 +143,11 @@ namespace ArenaShooter.Infrastructure.DI
             if (!_bulletsParent) Debug.LogError("[GameSceneInstaller] BulletsParent is not assigned!", this);
             if (!_enemyPrefab) Debug.LogError("[GameSceneInstaller] EnemyPrefab is not assigned!", this);
             if (!_enemiesParent) Debug.LogError("[GameSceneInstaller] EnemiesParent is not assigned!", this);
-            if (!_hudView) Debug.LogError("[GameSceneInstaller] HUDView is not assigned!", this);
+            if (!_gameplayHUDView) Debug.LogError("[GameSceneInstaller] HUDView is not assigned!", this);
             if (!_upgradeDatabase) Debug.LogError("[GameSceneInstaller] UpgradeDatabase is not assigned!", this);
             if (!_upgradeWindowView) Debug.LogError("[GameSceneInstaller] UpgradeWindowView is not assigned!", this);
+            if (!_timerView) Debug.LogError("[GameSceneInstaller] TimerView is not assigned!", this);
+            if (!_waveHUDView) Debug.LogError("[GameSceneInstaller] WaveHUDView is not assigned!", this);
         }
     }
 }
