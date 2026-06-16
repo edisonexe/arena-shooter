@@ -9,6 +9,7 @@ using ArenaShooter.Services.Combat;
 using ArenaShooter.Services.Input;
 using ArenaShooter.Services.Progression;
 using ArenaShooter.UI;
+using ArenaShooter.UI.Upgrades;
 using UnityEngine;
 using Zenject;
 
@@ -33,6 +34,7 @@ namespace ArenaShooter.Infrastructure.DI
 
         [Header("UI Views")]
         [SerializeField] private GameplayHUDView _hudView;
+        [SerializeField] private UpgradeWindowView _upgradeWindowView;
         
         [Header("Progression Databases")]
         [SerializeField] private UpgradeDatabase _upgradeDatabase;
@@ -77,6 +79,9 @@ namespace ArenaShooter.Infrastructure.DI
             Container.Bind<HeroStatsModifierService>().AsSingle();
             
             Container.BindInterfacesAndSelfTo<LevelingService>().AsSingle().NonLazy();
+            
+            Container.BindInstance(_upgradeWindowView).AsSingle();
+            Container.BindInterfacesAndSelfTo<UpgradeWindowPresenter>().AsSingle().NonLazy();
         }
 
         private void ValidateInInspector()
@@ -90,6 +95,7 @@ namespace ArenaShooter.Infrastructure.DI
             if (!_enemiesParent) Debug.LogError("[GameSceneInstaller] EnemiesParent is not assigned!", this);
             if (!_hudView) Debug.LogError("[GameSceneInstaller] HUDView is not assigned!", this);
             if (!_upgradeDatabase) Debug.LogError("[GameSceneInstaller] UpgradeDatabase is not assigned!", this);
+            if (!_upgradeWindowView) Debug.LogError("[GameSceneInstaller] UpgradeWindowView is not assigned!", this);
         }
     }
 }

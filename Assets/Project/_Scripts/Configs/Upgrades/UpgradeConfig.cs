@@ -7,11 +7,13 @@ namespace ArenaShooter.Configs.Upgrades
     {
         [SerializeField] private string _title;
         [SerializeField] private string _description;
+        [SerializeField] private Sprite _icon;
         [SerializeField] private UpgradeType _type;
         [SerializeField] private float _value;
 
         public string Title => _title;
         public string Description => _description;
+        public Sprite Icon => _icon;
         public UpgradeType Type => _type;
         public float Value => _value;
     }

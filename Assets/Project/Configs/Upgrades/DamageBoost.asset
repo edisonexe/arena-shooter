@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ArenaShooter.Configs.Upgrades.UpgradeConfig
   _title: +5 damage
   _description: ...
+  _icon: {fileID: 0}
   _type: 1
   _value: 5

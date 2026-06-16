@@ -13,6 +13,7 @@ namespace ArenaShooter.Services.Progression
         private int _xpToNextLevel = 100;
         
         public event Action<int, float> OnXpChanged;
+        public event Action OnLevelUp;
 
         public LevelingService(SignalBus signalBus)
         {
@@ -55,6 +56,8 @@ namespace ArenaShooter.Services.Progression
             _xpToNextLevel = UnityEngine.Mathf.RoundToInt(_xpToNextLevel * 1.2f);
 
             UnityEngine.Debug.LogWarning($"[Leveling] LEVEL UP! Current Level: {_currentLevel}. Next target: {_xpToNextLevel} XP");
+            
+            OnLevelUp?.Invoke();
         }
     }
 }
