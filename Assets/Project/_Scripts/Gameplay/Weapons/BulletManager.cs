@@ -13,8 +13,6 @@ namespace ArenaShooter.Gameplay.Weapons
         private readonly SpatialCollisionService _collisionService;
         private readonly List<Bullet> _activeBullets = new(128);
         
-        private const float BulletDamage = 10f;
-        
         public BulletManager(ObjectPool<Bullet> bulletPool, SpatialCollisionService collisionService)
         {
             _bulletPool = bulletPool ?? throw new ArgumentNullException(nameof(bulletPool));
@@ -38,7 +36,7 @@ namespace ArenaShooter.Gameplay.Weapons
 
                 bullet.TickUpdate(deltaTime);
 
-                if (_collisionService.CheckBulletHit(bullet.transform.position, BulletDamage))
+                if (_collisionService.CheckBulletHit(bullet.transform.position, bullet.Damage))
                 {
                     bullet.Despawn();
                     continue;
@@ -51,10 +49,10 @@ namespace ArenaShooter.Gameplay.Weapons
             }
         }
 
-        public void FireBullet(Vector3 position, Vector3 direction, float speed)
+        public void FireBullet(Vector3 position, Vector3 direction, float speed, float damage)
         {
             Bullet bullet = _bulletPool.Get();
-            bullet.Initialize(position, direction, speed);
+            bullet.Initialize(position, direction, speed, damage);
             _activeBullets.Add(bullet);
         }
     }

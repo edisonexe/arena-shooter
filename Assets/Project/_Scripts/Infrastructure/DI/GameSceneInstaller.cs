@@ -17,8 +17,10 @@ namespace ArenaShooter.Infrastructure.DI
 {
     public class GameSceneInstaller : MonoInstaller
     {
-        [Header("Configs")] [SerializeField] private HeroConfig _heroConfig;
-
+        [Header("Configs")] 
+        [SerializeField] private HeroConfig _heroConfig;
+        [SerializeField] private WeaponConfig _weaponConfig;
+        
         [Header("Prefabs & Spawn Points")] [SerializeField]
         private HeroView _heroViewPrefab;
 
@@ -44,7 +46,8 @@ namespace ArenaShooter.Infrastructure.DI
             ValidateInInspector();
 
             Container.BindInstance(_heroConfig).AsSingle();
-
+            Container.BindInstance(_weaponConfig).AsSingle();
+            
             Container.BindInterfacesAndSelfTo<NewInputService>().AsSingle().NonLazy();
 
             Container.Bind<SignalBus>().AsSingle();
@@ -63,11 +66,18 @@ namespace ArenaShooter.Infrastructure.DI
 
             Container.BindInterfacesAndSelfTo<EnemyManager>().AsSingle().NonLazy();
 
+            
             Container.Bind<HeroView>()
                 .FromComponentInNewPrefab(_heroViewPrefab)
                 .UnderTransform(_heroSpawnPoint)
                 .AsSingle();
-
+            
+            Container.Bind<Rigidbody>()
+                .FromResolveGetter<HeroView>(view => view.Rigidbody)
+                .AsSingle();
+            
+            Container.Bind<HeroRuntimeStats>().AsSingle();
+            
             Container.Bind<HeroMover>().AsSingle();
 
             Container.BindInterfacesAndSelfTo<HeroEntity>().AsSingle().NonLazy();
@@ -87,6 +97,7 @@ namespace ArenaShooter.Infrastructure.DI
         private void ValidateInInspector()
         {
             if (!_heroConfig) Debug.LogError("[GameSceneInstaller] HeroConfig is not assigned!", this);
+            if (!_weaponConfig) Debug.LogError("[GameSceneInstaller] WeaponConfig is not assigned!", this);
             if (!_heroViewPrefab) Debug.LogError("[GameSceneInstaller] HeroViewPrefab is not assigned!", this);
             if (!_heroSpawnPoint) Debug.LogError("[GameSceneInstaller] HeroSpawnPoint Transform is not assigned!", this);
             if (!_bulletPrefab) Debug.LogError("[GameSceneInstaller] BulletPrefab is not assigned!", this);

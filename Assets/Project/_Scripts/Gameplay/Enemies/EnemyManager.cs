@@ -17,7 +17,7 @@ namespace ArenaShooter.Gameplay.Enemies
         private readonly SignalBus _signalBus;
 
         private float _spawnTimer;
-        private readonly float _spawnInterval = 0.3f;
+        private readonly float _spawnInterval = 1f;
 
         private float _damageTimer;
         private const float DamageInterval = 0.5f;

@@ -1,5 +1,6 @@
 ﻿using System;
 using ArenaShooter.Configs;
+using ArenaShooter.Services.Progression;
 using UnityEngine;
 
 namespace ArenaShooter.Gameplay.Hero
@@ -7,19 +8,17 @@ namespace ArenaShooter.Gameplay.Hero
     public class HeroMover
     {
         private readonly Rigidbody _rigidbody;
-        private readonly HeroConfig _config;
-
-        public HeroMover(HeroView heroView, HeroConfig config)
+        private readonly HeroRuntimeStats _stats;
+        
+        public HeroMover(Rigidbody rigidbody, HeroRuntimeStats stats)
         {
-            if (!heroView) throw new ArgumentNullException(nameof(heroView), "[HeroMover] HeroView cannot be null!");
-            
-            _rigidbody = heroView.Rigidbody ?? throw new ArgumentNullException(nameof(heroView.Rigidbody), "[HeroMover] Rigidbody is missing on HeroView!");
-            _config = config ?? throw new ArgumentNullException(nameof(config), "[HeroMover] HeroConfig cannot be null!");
+            _rigidbody = rigidbody ?? throw new ArgumentNullException(nameof(rigidbody));
+            _stats = stats ?? throw new ArgumentNullException(nameof(stats));
         }
 
         public void Move(Vector2 direction, float fixedDeltaTime)
         {
-            Vector3 movement = new Vector3(direction.x, 0f, direction.y) * (_config.MoveSpeed * fixedDeltaTime);
+            Vector3 movement = new Vector3(direction.x, 0f, direction.y) * (_stats.MoveSpeed * fixedDeltaTime);
             
             _rigidbody.MovePosition(_rigidbody.position + movement);
         }

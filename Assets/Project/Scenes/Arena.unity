@@ -1992,6 +1992,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArenaShooter.Infrastructure.DI.GameSceneInstaller
   _heroConfig: {fileID: 11400000, guid: c08b7e4ff17e1b4438c9c7ae08c6c1cd, type: 2}
+  _weaponConfig: {fileID: 11400000, guid: 0375300afeda3674aa72bfa10cdf6720, type: 2}
   _heroViewPrefab: {fileID: 7593563798392002025, guid: 355d98916ec452a43aaf7f3ddccbf549, type: 3}
   _heroSpawnPoint: {fileID: 1091746003}
   _bulletPrefab: {fileID: 7188943504788321120, guid: 99000734532235048b7cf1140d653201, type: 3}

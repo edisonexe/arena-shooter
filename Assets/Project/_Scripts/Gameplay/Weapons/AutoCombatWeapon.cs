@@ -1,40 +1,46 @@
 ﻿using System;
 using ArenaShooter.Configs;
 using ArenaShooter.Gameplay.Enemies;
+using ArenaShooter.Gameplay.Hero;
 using UnityEngine;
 
 namespace ArenaShooter.Gameplay.Weapons
 {
     public class AutoCombatWeapon
     {
+        private readonly WeaponConfig _weaponConfig;
         private readonly BulletManager _bulletManager;
         private readonly EnemyManager _enemyManager;
-        private readonly HeroConfig _config;
+        private readonly HeroRuntimeStats _runtimeStats;
         
         private float _fireTimer;
-        private const float MaxTargetDetectionRadius = 30f;
 
-        public AutoCombatWeapon(BulletManager bulletManager, EnemyManager enemyManager, HeroConfig config)
+        public AutoCombatWeapon(
+            WeaponConfig weaponConfig, 
+            BulletManager bulletManager, 
+            EnemyManager enemyManager, 
+            HeroRuntimeStats runtimeStats)
         {
+            _weaponConfig = weaponConfig ?? throw new ArgumentNullException(nameof(weaponConfig));
             _bulletManager = bulletManager ?? throw new ArgumentNullException(nameof(bulletManager));
             _enemyManager = enemyManager ?? throw new ArgumentNullException(nameof(enemyManager));
-            _config = config ?? throw new ArgumentNullException(nameof(config));
+            _runtimeStats = runtimeStats ?? throw new ArgumentNullException(nameof(runtimeStats));
             
-            _fireTimer = _config.FireRate;
+            _fireTimer = _runtimeStats.WeaponCooldown;
         }
 
         public void TickWeapon(Vector3 shooterPosition, Transform firePoint, Action<Vector3> onTargetLocked)
         {
-            Enemy target = _enemyManager.GetClosestEnemy(shooterPosition, MaxTargetDetectionRadius);
+            Enemy target = _enemyManager.GetClosestEnemy(shooterPosition, _weaponConfig.FireRadius);
 
-            if (target)
+            if (target && target.IsActive)
             {
                 Vector3 targetPosition = target.transform.position;
-
                 onTargetLocked?.Invoke(targetPosition);
-                
+
                 _fireTimer += Time.deltaTime;
-                if (_fireTimer >= _config.FireRate)
+                
+                if (_fireTimer >= _runtimeStats.WeaponCooldown)
                 {
                     _fireTimer = 0f;
                     ExecuteShoot(firePoint, targetPosition);
@@ -42,7 +48,7 @@ namespace ArenaShooter.Gameplay.Weapons
             }
             else
             {
-                _fireTimer = _config.FireRate;
+                _fireTimer = _runtimeStats.WeaponCooldown;
             }
         }
 
@@ -52,7 +58,12 @@ namespace ArenaShooter.Gameplay.Weapons
             Vector3 shootDirection = targetPosition - firePointPosition;
             shootDirection.y = 0f; 
 
-            _bulletManager.FireBullet(firePointPosition, shootDirection, 20f);
+            _bulletManager.FireBullet(
+                firePointPosition, 
+                shootDirection.normalized, 
+                _weaponConfig.BulletSpeed, 
+                _runtimeStats.BulletDamage
+            );
         }
     }
 }
