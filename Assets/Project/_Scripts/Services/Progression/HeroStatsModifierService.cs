@@ -37,14 +37,21 @@ namespace ArenaShooter.Services.Progression
             Debug.LogWarning($"[Stats] Applied {upgrade.Title}. New modifier for {upgrade.Type}: {_modifiers[upgrade.Type]}");
         }
 
+        public void ApplyDamage(float damageAmount)
+        {
+            float newHealth = Mathf.Max(_runtimeStats.CurrentHealth - damageAmount, 0f);
+            _runtimeStats.SetCurrentHealth(newHealth);
+        }
+        
         private void RecalculateAndApply()
         {
             float finalSpeed = _heroConfig.MoveSpeed * _modifiers[UpgradeType.MoveSpeedBoost];
             float finalDamage = _weaponConfig.Damage * _modifiers[UpgradeType.DamageBoost];
-            
             float finalCooldown = _weaponConfig.FireCooldown / _modifiers[UpgradeType.FireRateBoost];
             
-            _runtimeStats.UpdateStats(finalSpeed, finalDamage, finalCooldown);
+            _runtimeStats.SetMoveSpeed(finalSpeed);
+            _runtimeStats.SetBulletDamage(finalDamage);
+            _runtimeStats.SetWeaponCooldown(finalCooldown);
         }
     }
 }

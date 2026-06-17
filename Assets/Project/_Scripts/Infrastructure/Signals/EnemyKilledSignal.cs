@@ -2,10 +2,10 @@
 
 namespace ArenaShooter.Infrastructure.Signals
 {
-    public struct EnemyKilledSignal
+    public readonly struct EnemyKilledSignal
     {
-        public Vector3 DeathPosition;
-        public int XpValue;
+        public readonly Vector3 DeathPosition;
+        public readonly int XpValue;
 
         public EnemyKilledSignal(Vector3 deathPosition, int xpValue)
         {

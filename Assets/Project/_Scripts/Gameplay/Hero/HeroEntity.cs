@@ -4,6 +4,7 @@ using ArenaShooter.Gameplay.Combat;
 using ArenaShooter.Gameplay.Weapons;
 using ArenaShooter.Infrastructure.Signals;
 using ArenaShooter.Services.Input;
+using ArenaShooter.Services.Progression;
 using UnityEngine;
 using Zenject;
 
@@ -15,10 +16,9 @@ namespace ArenaShooter.Gameplay.Hero
         private readonly HeroMover _mover;
         private readonly HeroView _view;
         private readonly AutoCombatWeapon _weapon;
-        private readonly HeroConfig _config;
         private readonly SignalBus _signalBus;
-        
-        private float _currentHealth;
+        private readonly HeroRuntimeStats _runtimeStats;
+        private readonly HeroStatsModifierService _modifierService;
 
         private readonly Action<Vector3> _onTargetLockedCache;
         private Action<DamageTakenSignal> _onDamageSignalCache;
@@ -29,18 +29,19 @@ namespace ArenaShooter.Gameplay.Hero
             HeroMover mover, 
             HeroView view, 
             AutoCombatWeapon weapon, 
-            HeroConfig config,
-            SignalBus signalBus)
+            SignalBus signalBus,
+            HeroRuntimeStats runtimeStats,
+            HeroStatsModifierService modifierService)
         {
             _inputService = inputService ?? throw new ArgumentNullException(nameof(inputService));
             _mover = mover ?? throw new ArgumentNullException(nameof(mover));
             _view = view ?? throw new ArgumentNullException(nameof(view));
             _weapon = weapon ?? throw new ArgumentNullException(nameof(weapon));
-            _config = config ?? throw new ArgumentNullException(nameof(config));
             _signalBus = signalBus ?? throw new ArgumentNullException(nameof(signalBus));
+            _runtimeStats = runtimeStats ?? throw new ArgumentNullException(nameof(runtimeStats));
+            _modifierService = modifierService ?? throw new ArgumentNullException(nameof(modifierService));
 
             _onTargetLockedCache = RotateHeroTowardsTarget;
-            _currentHealth = _config.MaxHealth;
         }
 
         public void Initialize()
@@ -56,7 +57,7 @@ namespace ArenaShooter.Gameplay.Hero
         
         public void FixedTick()
         {
-            _mover.Move(_inputService.Axis, UnityEngine.Time.fixedDeltaTime);
+            _mover.Move(_inputService.Axis, Time.fixedDeltaTime);
         }
 
         public void Tick()
@@ -66,15 +67,14 @@ namespace ArenaShooter.Gameplay.Hero
 
         public void TakeDamage(float amount)
         {
-            if (_currentHealth <= 0f) return;
+            if (_runtimeStats.CurrentHealth <= 0f) return;
 
-            _currentHealth -= amount;
+            _modifierService.ApplyDamage(amount);
 
-            _currentHealth = Mathf.Max(_currentHealth, 0f);
+            float normalizedHealth = _runtimeStats.MaxHealth > 0f ? _runtimeStats.CurrentHealth / _runtimeStats.MaxHealth : 0f;
+            OnHealthChanged?.Invoke(normalizedHealth);
 
-            OnHealthChanged?.Invoke(_currentHealth / _config.MaxHealth);
-
-            if (_currentHealth <= 0f)
+            if (_runtimeStats.CurrentHealth <= 0f)
             {
                 Die();
             }
@@ -88,6 +88,8 @@ namespace ArenaShooter.Gameplay.Hero
         private void Die()
         {
             Debug.LogError("[HeroEntity] Game Over! Hero is dead.");
+            
+            _signalBus.Fire(new PlayerDiedSignal());
             _view.gameObject.SetActive(false);
         }
         

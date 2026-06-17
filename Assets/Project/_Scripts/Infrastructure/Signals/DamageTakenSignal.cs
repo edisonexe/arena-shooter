@@ -1,8 +1,8 @@
 ﻿namespace ArenaShooter.Infrastructure.Signals
 {
-    public struct DamageTakenSignal
+    public readonly struct DamageTakenSignal
     {
-        public float Amount;
+        public readonly float Amount;
 
         public DamageTakenSignal(float amount)
         {
