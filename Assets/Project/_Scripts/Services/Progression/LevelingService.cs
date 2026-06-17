@@ -1,11 +1,13 @@
 ﻿using System;
 using ArenaShooter.Configs;
+using ArenaShooter.Infrastructure.Signals;
 
 namespace ArenaShooter.Services.Progression
 {
     public class LevelingService
     {
         private readonly LevelingConfig _config;
+        private readonly SignalBus _signalBus;
         
         private int _currentLevel = 1;
         private int _currentXp;
@@ -13,16 +15,15 @@ namespace ArenaShooter.Services.Progression
         
         public event Action<int, int> OnXpChanged; // currentXp, xpToNextLevel
         public event Action<int> OnLevelChanged; // new lvl
-        public event Action OnLevelUp; // ui action
 
         public int CurrentLevel => _currentLevel;
         public int CurrentXp => _currentXp;
         public int XpToNextLevel => _xpToNextLevel;
-        public float ProgressNormalized => _xpToNextLevel > 0 ? (float)_currentXp / _xpToNextLevel : 0f;
         
-        public LevelingService(LevelingConfig config)
+        public LevelingService(LevelingConfig config, SignalBus signalBus)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
+            _signalBus = signalBus ?? throw new ArgumentNullException(nameof(signalBus));
             _xpToNextLevel = _config.BaseXpToNextLevel;
         }
         
@@ -43,9 +44,9 @@ namespace ArenaShooter.Services.Progression
 
             if (levelUpOccurred)
             {
-                UnityEngine.Debug.LogWarning($"[Leveling] LEVEL UP! Current Level: {_currentLevel}. Next target: {_xpToNextLevel} XP");
                 OnLevelChanged?.Invoke(_currentLevel);
-                OnLevelUp?.Invoke();
+                
+                _signalBus.Fire(new GameStatesSignals.LevelUpSignal());
             }
             
             OnXpChanged?.Invoke(_currentXp, _xpToNextLevel);

@@ -5,7 +5,7 @@ namespace ArenaShooter.Infrastructure.Signals
 {
     public class SignalBus
     {
-        private readonly Dictionary<Type, Delegate> _subscribers = new Dictionary<Type, Delegate>(16);
+        private readonly Dictionary<Type, Delegate> _subscribers = new (16);
 
         public void Subscribe<TSignal>(Action<TSignal> callback) where TSignal : struct
         {

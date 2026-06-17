@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ArenaShooter.Configs.Upgrades;
 using ArenaShooter.Gameplay.Hero;
+using ArenaShooter.Infrastructure.Signals;
 using ArenaShooter.Services.Progression;
 using Zenject;
 
@@ -9,60 +10,60 @@ namespace ArenaShooter.UI.Upgrades
 {
     public class UpgradeWindowPresenter : IInitializable, IDisposable
     {
-        private readonly UpgradeWindowView _view;
-        private readonly LevelingService _levelingService;
+        private readonly IUpgradeWindowView _view;
         private readonly HeroRuntimeStats _runtimeStats;
         private readonly HeroStatsModifierService _modifierService;
         private readonly UpgradeDatabase _database;
+        private readonly SignalBus _signalBus;
         
-        private const int CardsToShowCount = 3;
+        private const int CARDS_TO_SHOW = 3;
         
         private readonly List<UpgradeConfig> _chosenUpgradesBuffer = new (8);
         private readonly List<int> _randomIndexPool = new (32);
         
         private readonly Action<UpgradeConfig> _onUpgradeSelectedCache;
+        private readonly Action<GameStatesSignals.ShowUpgradeWindowSignal> _onShowUIRequestCache;
 
         public UpgradeWindowPresenter(
-            UpgradeWindowView view, 
-            LevelingService levelingService, 
+            IUpgradeWindowView view,
             HeroStatsModifierService modifierService,
             UpgradeDatabase database,
-            HeroRuntimeStats runtimeStats)
+            HeroRuntimeStats runtimeStats,
+            SignalBus signalBus)
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));
-            _levelingService = levelingService ?? throw new ArgumentNullException(nameof(levelingService));
             _modifierService = modifierService ?? throw new ArgumentNullException(nameof(modifierService));
             _database = database ?? throw new ArgumentNullException(nameof(database));
             _runtimeStats = runtimeStats ?? throw new ArgumentNullException(nameof(runtimeStats));
+            _signalBus = signalBus ?? throw new ArgumentNullException(nameof(signalBus));
             
             _onUpgradeSelectedCache = OnUpgradeSelected;
+            _onShowUIRequestCache = OnShowUIRequestReceived;
         }
 
         public void Initialize()
         {
             _view.Initialize(_onUpgradeSelectedCache);
             _view.Hide();
-
-            _levelingService.OnLevelUp += OnLevelUpTriggered;
+            
+            _signalBus.Subscribe(_onShowUIRequestCache);
         }
 
         public void Dispose()
         {
-            _levelingService.OnLevelUp -= OnLevelUpTriggered;
+            _signalBus.Unsubscribe(_onShowUIRequestCache);
         }
 
-        private void OnLevelUpTriggered()
+        private void OnShowUIRequestReceived(GameStatesSignals.ShowUpgradeWindowSignal signal)
         {
             if (_runtimeStats.CurrentHealth <= 0f) return;
             
-            UnityEngine.Time.timeScale = 0f;
-
             UpgradeConfig[] allUpgrades = _database.AllUpgrades;
             int totalUpgradesCount = allUpgrades.Length;
 
             _chosenUpgradesBuffer.Clear();
             
-            if (totalUpgradesCount <= CardsToShowCount)
+            if (totalUpgradesCount <= CARDS_TO_SHOW)
             {
                 for (var i = 0; i < totalUpgradesCount; i++)
                 {
@@ -77,13 +78,12 @@ namespace ArenaShooter.UI.Upgrades
                     _randomIndexPool.Add(i);
                 }
                 
-                for (int i = 0; i < CardsToShowCount; i++)
+                for (int i = 0; i < CARDS_TO_SHOW; i++)
                 {
                     int poolIndex = UnityEngine.Random.Range(0, _randomIndexPool.Count);
                     int upgradeIndex = _randomIndexPool[poolIndex];
                     
                     _chosenUpgradesBuffer.Add(allUpgrades[upgradeIndex]);
-                    
                     _randomIndexPool.RemoveAt(poolIndex);
                 }
             }
@@ -95,10 +95,8 @@ namespace ArenaShooter.UI.Upgrades
         {
             _modifierService.ApplyUpgrade(selectedUpgrade);
             _view.Hide();
-            if (_runtimeStats.CurrentHealth > 0f)
-            {
-                UnityEngine.Time.timeScale = 1f;
-            }
+            
+            _signalBus.Fire(new GameStatesSignals.RequestGameplayStateSignal());
         }
     }
 }

@@ -7,10 +7,11 @@ using ArenaShooter.Gameplay.Items;
 using ArenaShooter.Gameplay.Weapons;
 using ArenaShooter.Infrastructure.Pooling;
 using ArenaShooter.Infrastructure.Signals;
+using ArenaShooter.Infrastructure.StateMachine;
+using ArenaShooter.Infrastructure.StateMachine.States;
 using ArenaShooter.Services.Combat;
 using ArenaShooter.Services.Input;
 using ArenaShooter.Services.Progression;
-using ArenaShooter.UI;
 using ArenaShooter.UI.GameOver;
 using ArenaShooter.UI.HUD;
 using ArenaShooter.UI.Upgrades;
@@ -64,13 +65,17 @@ namespace ArenaShooter.Infrastructure.DI
             InstallHUDModules();
             InstallProgressionUI();
             InstallGameOverUI();
+            
+            Container.Resolve<GameStateMachine>().TransitionTo<BootstrapState>();
         }
 
         private void InstallInfrastructure()
         {
             Container.Bind<SignalBus>().AsSingle();
-            
+
             Container.BindInterfacesAndSelfTo<NewInputService>().AsSingle().NonLazy();
+            Container.Bind<StateFactory>().AsSingle();
+            Container.BindInterfacesAndSelfTo<GameStateMachine>().AsSingle().NonLazy();
         }
 
         private void InstallCoreServices()
@@ -131,26 +136,26 @@ namespace ArenaShooter.Infrastructure.DI
 
         private void InstallHUDModules()
         {
-            Container.BindInstance(_timerView).AsSingle();
+            Container.BindInterfacesAndSelfTo<TimerView>().FromInstance(_timerView).AsSingle();
             Container.BindInterfacesAndSelfTo<TimerPresenter>().AsSingle().NonLazy();
 
-            Container.BindInstance(_waveHUDView).AsSingle();
+            Container.BindInterfacesAndSelfTo<WaveHUDView>().FromInstance(_waveHUDView).AsSingle();
             Container.BindInterfacesAndSelfTo<WaveHUDPresenter>().AsSingle().NonLazy();
-            
-            Container.BindInstance(_gameplayHUDView).AsSingle();
+
+            Container.BindInterfacesAndSelfTo<GameplayHUDView>().FromInstance(_gameplayHUDView).AsSingle();
             Container.BindInterfacesAndSelfTo<GameplayHUDPresenter>().AsSingle().NonLazy();
         }
 
         private void InstallProgressionUI()
         {
             Container.BindInstance(_upgradeDatabase).AsSingle();
-            Container.BindInstance(_upgradeWindowView).AsSingle();
+            Container.BindInterfacesTo<UpgradeWindowView>().FromInstance(_upgradeWindowView).AsSingle();
             Container.BindInterfacesAndSelfTo<UpgradeWindowPresenter>().AsSingle().NonLazy();
         }
         
         private void InstallGameOverUI()
         {
-            Container.BindInstance(_gameOverWindowView).AsSingle();
+            Container.BindInterfacesAndSelfTo<GameOverWindowView>().FromInstance(_gameOverWindowView).AsSingle();
             Container.BindInterfacesAndSelfTo<GameOverPresenter>().AsSingle().NonLazy();
         }
         

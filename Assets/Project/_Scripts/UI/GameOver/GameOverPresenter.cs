@@ -1,5 +1,4 @@
 ﻿using System;
-using ArenaShooter.Infrastructure.Signals;
 using UnityEngine.SceneManagement;
 using Zenject;
 
@@ -7,37 +6,28 @@ namespace ArenaShooter.UI.GameOver
 {
     public class GameOverPresenter : IInitializable, IDisposable
     {
-        private readonly GameOverWindowView _view;
-        private readonly SignalBus _signalBus;
+        private readonly IGameOverWindowView _view;
 
-        public GameOverPresenter(GameOverWindowView view, SignalBus signalBus)
+        public GameOverPresenter(GameOverWindowView view)
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));
-            _signalBus = signalBus ?? throw new ArgumentNullException(nameof(signalBus));
         }
 
         public void Initialize()
         {
-            _view.OnRestartClick.AddListener(HandleRestartRequest);
+            _view.OnRestartRequested += HandleRestart;
             _view.Hide();
-            _signalBus.Subscribe<PlayerDiedSignal>(OnPlayerDied);
         }
 
-        private void OnPlayerDied(PlayerDiedSignal signal)
+        public void Dispose()
         {
-            _view.Show();
+            _view.OnRestartRequested -= HandleRestart;
         }
 
-        private void HandleRestartRequest()
+        private void HandleRestart()
         {
             _view.Hide();
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        }
-        
-        public void Dispose()
-        {
-            _signalBus.Unsubscribe<PlayerDiedSignal>(OnPlayerDied);
-            _view.OnRestartClick.RemoveListener(HandleRestartRequest);
         }
     }
 }

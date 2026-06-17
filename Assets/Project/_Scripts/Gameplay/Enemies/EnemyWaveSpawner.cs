@@ -21,10 +21,9 @@ namespace ArenaShooter.Gameplay.Enemies
         private float _spawnCooldownTimer;
         
         private float _currentSpawnInterval;
-        private int _secondsInCurrentWave;
         private bool _isSpawningActive = true;
         
-        private Action<PlayerDiedSignal> _onPlayerDiedCache;
+        private Action<GameStatesSignals.PlayerDiedSignal> _onPlayerDiedCache;
         
         public event Action<int> OnWaveChanged;
         public event Action<float> OnGameTimeUpdated;
@@ -104,10 +103,9 @@ namespace ArenaShooter.Gameplay.Enemies
             _currentSpawnInterval = _config.BaseSpawnInterval - (_currentWave * _config.DifficultyScalingFactor);
             
             OnWaveChanged?.Invoke(_currentWave);
-            Debug.LogWarning($"[WaveSpawner] Entered Wave {_currentWave}. Spawn Interval reduced to: {_currentSpawnInterval:F2}s");
         }
         
-        private void HandlePlayerDied(PlayerDiedSignal signal)
+        private void HandlePlayerDied(GameStatesSignals.PlayerDiedSignal signal)
         {
             _isSpawningActive = false;
         }

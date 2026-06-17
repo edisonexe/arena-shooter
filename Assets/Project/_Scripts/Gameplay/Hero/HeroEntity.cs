@@ -1,5 +1,4 @@
 ﻿using System;
-using ArenaShooter.Configs;
 using ArenaShooter.Gameplay.Combat;
 using ArenaShooter.Gameplay.Weapons;
 using ArenaShooter.Infrastructure.Signals;
@@ -89,7 +88,7 @@ namespace ArenaShooter.Gameplay.Hero
         {
             Debug.LogError("[HeroEntity] Game Over! Hero is dead.");
             
-            _signalBus.Fire(new PlayerDiedSignal());
+            _signalBus.Fire(new GameStatesSignals.PlayerDiedSignal());
             _view.gameObject.SetActive(false);
         }
         
