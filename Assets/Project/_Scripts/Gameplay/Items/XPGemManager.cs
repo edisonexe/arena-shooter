@@ -33,19 +33,25 @@ namespace ArenaShooter.Gameplay.Items
             _heroView = heroView ?? throw new ArgumentNullException(nameof(heroView));
             _levelingService = levelingService ?? throw new ArgumentNullException(nameof(levelingService));
             _signalBus = signalBus ?? throw new ArgumentNullException(nameof(signalBus));
+            
+            _onEnemyKilledCache = HandleEnemyKilled;
         }
 
         public void Initialize()
         {
-            _onEnemyKilledCache = HandleEnemyKilled;
             _signalBus.Subscribe(_onEnemyKilledCache);
         }
 
+        public void Dispose()
+        {
+            _signalBus.Unsubscribe(_onEnemyKilledCache);
+        }
+        
         public void Tick()
         {
             if (_activeGems.Count == 0) return;
 
-            Vector3 heroPosition = _heroView.Rigidbody.position;
+            Vector3 heroPosition = _heroView.transform.position;
             float deltaTime = Time.deltaTime;
 
             for (var i = _activeGems.Count - 1; i >= 0; i--)
@@ -60,12 +66,14 @@ namespace ArenaShooter.Gameplay.Items
                 }
 
                 Vector3 gemPosition = gem.transform.position;
+                
+                heroPosition.y = gemPosition.y;
+                
                 float sqrDistance = (heroPosition - gemPosition).sqrMagnitude;
 
                 if (sqrDistance <= CollectionRadiusSqr)
                 {
                     _levelingService.AddXp(gem.XpValue); 
-                    gem.Collect();
                     
                     _activeGems.RemoveAt(i);
                     _gemPool.Return(gem);
@@ -84,11 +92,6 @@ namespace ArenaShooter.Gameplay.Items
             XPGem gem = _gemPool.Get();
             gem.Initialize(signal.DeathPosition, signal.XpValue); 
             _activeGems.Add(gem);
-        }
-
-        public void Dispose()
-        {
-            _signalBus.Unsubscribe(_onEnemyKilledCache);
         }
     }
 }

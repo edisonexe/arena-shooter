@@ -3,24 +3,38 @@ using UnityEngine;
 
 namespace ArenaShooter.Gameplay.Items
 {
+    [RequireComponent(typeof(MeshRenderer))]
     public class XPGem : MonoBehaviour, IPoolable<XPGem>
     {
-        private int _xpValue;
-        private bool _isActive;
-        
-        public int XpValue => _xpValue;
-        public bool IsActive => _isActive;
+        [SerializeField] private MeshRenderer _meshRenderer;
+
+        public int XpValue { get; private set; }
+    
+        public bool IsActive { get; private set; }
 
         public void Initialize(Vector3 position, int xpValue)
         {
             transform.position = position;
-            _xpValue = xpValue;
+            XpValue = xpValue;
         }
 
-        public void Collect() => _isActive = false;
+        public void Spawn()
+        {
+            IsActive = true;
+            
+            _meshRenderer.enabled = true;
+        }
 
-        public void Spawn() => _isActive = true;
-
-        public void Despawn() { }
+        public void Despawn()
+        {
+            IsActive = false;
+            _meshRenderer.enabled = false;
+        }
+        
+        private void OnValidate()
+        {
+            if (!(_meshRenderer ??= GetComponent<MeshRenderer>())) 
+                Debug.LogError($"[XPGem] MeshRenderer is missing on '{name}'!", this);
+        }
     }
 }

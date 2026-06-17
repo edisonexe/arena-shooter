@@ -23,7 +23,7 @@ namespace ArenaShooter.Gameplay.Enemies
         private float _currentSpawnInterval;
         private bool _isSpawningActive = true;
         
-        private Action<GameStatesSignals.PlayerDiedSignal> _onPlayerDiedCache;
+        private Action<PlayerDiedSignal> _onPlayerDiedCache;
         
         public event Action<int> OnWaveChanged;
         public event Action<float> OnGameTimeUpdated;
@@ -88,7 +88,7 @@ namespace ArenaShooter.Gameplay.Enemies
                 Vector2 randomCircle = UnityEngine.Random.insideUnitCircle.normalized * UnityEngine.Random.Range(12f, 18f);
                 Vector3 spawnPosition = _heroTransform.position + new Vector3(randomCircle.x, 0f, randomCircle.y);
 
-                enemy.transform.position = spawnPosition;
+                enemy.Initialize(spawnPosition);
 
                 enemy.Spawn();
                 
@@ -105,7 +105,7 @@ namespace ArenaShooter.Gameplay.Enemies
             OnWaveChanged?.Invoke(_currentWave);
         }
         
-        private void HandlePlayerDied(GameStatesSignals.PlayerDiedSignal signal)
+        private void HandlePlayerDied(PlayerDiedSignal signal)
         {
             _isSpawningActive = false;
         }

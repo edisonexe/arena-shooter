@@ -12,10 +12,10 @@ namespace ArenaShooter.Gameplay.Enemies
     {
         private readonly ObjectPool<Enemy> _enemyPool;
         private readonly HeroView _heroView;
-        private readonly List<Enemy> _activeEnemies = new(256);
-
         private readonly SignalBus _signalBus;
 
+        private readonly List<Enemy> _activeEnemies = new(256);
+        
         private float _damageTimer;
         private const float DamageInterval = 0.5f;
         private const float AttackRadiusSqr = 1.0f;

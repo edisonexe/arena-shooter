@@ -38,13 +38,15 @@ namespace ArenaShooter.Gameplay.Weapons
 
                 if (_collisionService.CheckBulletHit(bullet.transform.position, bullet.Damage))
                 {
-                    bullet.Despawn();
+                    _activeBullets.RemoveAt(i);
+                    _bulletPool.Return(bullet);
                     continue;
                 }
                 
                 if (bullet.transform.position.sqrMagnitude > 2500f)
                 {
-                    bullet.Despawn();
+                    _activeBullets.RemoveAt(i);
+                    _bulletPool.Return(bullet);
                 }
             }
         }
