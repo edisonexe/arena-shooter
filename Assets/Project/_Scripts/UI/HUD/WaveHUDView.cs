@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ArenaShooter.UI.HUD
 {
-    public class WaveHUDView : MonoBehaviour
+    public class WaveHUDView : MonoBehaviour, IWaveHUDView
     {
         [SerializeField] private TextMeshProUGUI _waveText;
 

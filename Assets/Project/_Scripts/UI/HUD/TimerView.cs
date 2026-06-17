@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ArenaShooter.UI.HUD
 {
-    public class TimerView : MonoBehaviour
+    public class TimerView : MonoBehaviour, ITimerView
     {
         [SerializeField] private TextMeshProUGUI _timerText;
         

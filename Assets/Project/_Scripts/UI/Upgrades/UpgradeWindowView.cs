@@ -5,13 +5,14 @@ using UnityEngine;
 
 namespace ArenaShooter.UI.Upgrades
 {
-    public class UpgradeWindowView : MonoBehaviour
+    public class UpgradeWindowView : MonoBehaviour, IUpgradeWindowView
     {
         [SerializeField] private UpgradeCardView[] _cards;
 
         private void OnValidate()
         {
-            if (_cards == null || _cards.Length == 0) Debug.LogError("[UpgradeWindowView] No cards have been set.", this);
+            if (_cards == null || _cards.Length == 0) 
+                Debug.LogError("[UpgradeWindowView] No cards have been set.", this);
         }
 
         public void Initialize(Action<UpgradeConfig> onUpgradeSelected)

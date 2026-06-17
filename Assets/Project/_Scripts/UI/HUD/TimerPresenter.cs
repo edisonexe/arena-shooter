@@ -7,7 +7,7 @@ namespace ArenaShooter.UI.HUD
 {
     public class TimerPresenter : IInitializable, IDisposable
     {
-        private readonly TimerView _view;
+        private readonly ITimerView _view;
         private readonly EnemyWaveSpawner _waveSpawner;
         
         private int _lastUpdatedSecond = -1;

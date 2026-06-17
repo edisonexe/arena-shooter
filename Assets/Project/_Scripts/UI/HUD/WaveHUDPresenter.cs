@@ -6,7 +6,7 @@ namespace ArenaShooter.UI.HUD
 {
     public class WaveHUDPresenter : IInitializable, IDisposable
     {
-        private readonly WaveHUDView _view;
+        private readonly IWaveHUDView _view;
         private readonly EnemyWaveSpawner _waveSpawner;
 
         private const int ST_WAVE_NUM = 1;
