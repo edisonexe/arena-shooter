@@ -4,10 +4,8 @@ using Zenject;
 
 namespace ArenaShooter.Services.Progression
 {
-    public class LevelingService : IInitializable, IDisposable
+    public class LevelingService
     {
-        private readonly SignalBus _signalBus;
-
         private int _currentLevel = 1;
         private int _currentXp = 0;
         private int _xpToNextLevel = 100;
@@ -15,28 +13,10 @@ namespace ArenaShooter.Services.Progression
         public event Action<int, float> OnXpChanged;
         public event Action OnLevelUp;
 
-        public LevelingService(SignalBus signalBus)
+        public void AddXp(int amount)
         {
-            _signalBus = signalBus ?? throw new ArgumentNullException(nameof(signalBus));
-        }
-
-        public void Initialize()
-        {
-            _signalBus.Subscribe<EnemyKilledSignal>(OnEnemyKilled);
-        }
-
-        public void Dispose()
-        {
-            _signalBus.Unsubscribe<EnemyKilledSignal>(OnEnemyKilled);
-        }
-
-        private void OnEnemyKilled(EnemyKilledSignal signal)
-        {
-            AddXp(signal.XpValue);
-        }
-
-        private void AddXp(int amount)
-        {
+            if (amount <= 0) return;
+            
             _currentXp += amount;
             
             while (_currentXp >= _xpToNextLevel)
