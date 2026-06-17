@@ -2,24 +2,29 @@
 using ArenaShooter.Configs.Enemies;
 using ArenaShooter.Gameplay.Hero;
 using ArenaShooter.Infrastructure.Pooling;
+using ArenaShooter.Infrastructure.Signals;
 using UnityEngine;
 using Zenject;
 
 namespace ArenaShooter.Gameplay.Enemies
 {
-    public class EnemyWaveSpawner : ITickable
+    public class EnemyWaveSpawner : ITickable, IInitializable, IDisposable
     {
         private readonly WaveConfig _config;
         private readonly ObjectPool<Enemy> _enemyPool;
         private readonly EnemyManager _enemyManager;
         private readonly Transform _heroTransform;
-
+        private readonly SignalBus _signalBus;
+        
         private int _currentWave = 1;
         private float _gameTimeTimer;
         private float _spawnCooldownTimer;
         
         private float _currentSpawnInterval;
         private int _secondsInCurrentWave;
+        private bool _isSpawningActive = true;
+        
+        private Action<PlayerDiedSignal> _onPlayerDiedCache;
         
         public event Action<int> OnWaveChanged;
         public event Action<float> OnGameTimeUpdated;
@@ -28,18 +33,28 @@ namespace ArenaShooter.Gameplay.Enemies
             WaveConfig config, 
             ObjectPool<Enemy> enemyPool, 
             EnemyManager enemyManager,
-            HeroView heroView)
+            HeroView heroView,
+            SignalBus signalBus)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _enemyPool = enemyPool ?? throw new ArgumentNullException(nameof(enemyPool));
             _enemyManager = enemyManager ?? throw new ArgumentNullException(nameof(enemyManager));
             _heroTransform = heroView ? heroView.transform : throw new ArgumentNullException(nameof(heroView));
-
+            _signalBus = signalBus ?? throw new ArgumentNullException(nameof(signalBus));
+            
             _currentSpawnInterval = _config.BaseSpawnInterval;
         }
 
+        public void Initialize()
+        {
+            _onPlayerDiedCache = HandlePlayerDied;
+            _signalBus.Subscribe(_onPlayerDiedCache);
+        }
+        
         public void Tick()
         {
+            if (!_isSpawningActive) return;
+            
             float deltaTime = Time.deltaTime;
             _gameTimeTimer += deltaTime;
             _spawnCooldownTimer += deltaTime;
@@ -75,8 +90,7 @@ namespace ArenaShooter.Gameplay.Enemies
                 Vector3 spawnPosition = _heroTransform.position + new Vector3(randomCircle.x, 0f, randomCircle.y);
 
                 enemy.transform.position = spawnPosition;
-                
-                float waveHpModifier = 1f + (_currentWave - 1) * 0.25f;
+
                 enemy.Spawn();
                 
                 _enemyManager.AddEnemy(enemy); 
@@ -91,6 +105,16 @@ namespace ArenaShooter.Gameplay.Enemies
             
             OnWaveChanged?.Invoke(_currentWave);
             Debug.LogWarning($"[WaveSpawner] Entered Wave {_currentWave}. Spawn Interval reduced to: {_currentSpawnInterval:F2}s");
+        }
+        
+        private void HandlePlayerDied(PlayerDiedSignal signal)
+        {
+            _isSpawningActive = false;
+        }
+
+        public void Dispose()
+        {
+            _signalBus.Unsubscribe(_onPlayerDiedCache);
         }
     }
 }

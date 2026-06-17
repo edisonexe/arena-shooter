@@ -1,6 +1,4 @@
-﻿using System;
-using UnityEngine;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace ArenaShooter.UI.GameOver
@@ -21,13 +19,11 @@ namespace ArenaShooter.UI.GameOver
         public void Show()
         {
             _contentRoot.SetActive(true);
-            Time.timeScale = 0f;
         }
 
         public void Hide()
         {
             _contentRoot.SetActive(false);
-            Time.timeScale = 1f;
         }
     }
 }

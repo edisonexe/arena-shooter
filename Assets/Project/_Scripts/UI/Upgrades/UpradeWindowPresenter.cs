@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ArenaShooter.Configs.Upgrades;
+using ArenaShooter.Gameplay.Hero;
 using ArenaShooter.Services.Progression;
 using Zenject;
 
@@ -10,6 +11,7 @@ namespace ArenaShooter.UI.Upgrades
     {
         private readonly UpgradeWindowView _view;
         private readonly LevelingService _levelingService;
+        private readonly HeroRuntimeStats _runtimeStats;
         private readonly HeroStatsModifierService _modifierService;
         private readonly UpgradeDatabase _database;
         
@@ -24,13 +26,15 @@ namespace ArenaShooter.UI.Upgrades
             UpgradeWindowView view, 
             LevelingService levelingService, 
             HeroStatsModifierService modifierService,
-            UpgradeDatabase database)
+            UpgradeDatabase database,
+            HeroRuntimeStats runtimeStats)
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));
             _levelingService = levelingService ?? throw new ArgumentNullException(nameof(levelingService));
             _modifierService = modifierService ?? throw new ArgumentNullException(nameof(modifierService));
             _database = database ?? throw new ArgumentNullException(nameof(database));
-
+            _runtimeStats = runtimeStats ?? throw new ArgumentNullException(nameof(runtimeStats));
+            
             _onUpgradeSelectedCache = OnUpgradeSelected;
         }
 
@@ -49,6 +53,8 @@ namespace ArenaShooter.UI.Upgrades
 
         private void OnLevelUpTriggered()
         {
+            if (_runtimeStats.CurrentHealth <= 0f) return;
+            
             UnityEngine.Time.timeScale = 0f;
 
             UpgradeConfig[] allUpgrades = _database.AllUpgrades;
@@ -89,7 +95,10 @@ namespace ArenaShooter.UI.Upgrades
         {
             _modifierService.ApplyUpgrade(selectedUpgrade);
             _view.Hide();
-            UnityEngine.Time.timeScale = 1f;
+            if (_runtimeStats.CurrentHealth > 0f)
+            {
+                UnityEngine.Time.timeScale = 1f;
+            }
         }
     }
 }
