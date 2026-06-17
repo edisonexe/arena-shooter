@@ -22,7 +22,7 @@ namespace ArenaShooter.UI.Upgrades
         private readonly List<int> _randomIndexPool = new (32);
         
         private readonly Action<UpgradeConfig> _onUpgradeSelectedCache;
-        private readonly Action<GameStatesSignals.ShowUpgradeWindowSignal> _onShowUIRequestCache;
+        private readonly Action<ShowUpgradeWindowSignal> _onShowUIRequestCache;
 
         public UpgradeWindowPresenter(
             IUpgradeWindowView view,
@@ -54,7 +54,7 @@ namespace ArenaShooter.UI.Upgrades
             _signalBus.Unsubscribe(_onShowUIRequestCache);
         }
 
-        private void OnShowUIRequestReceived(GameStatesSignals.ShowUpgradeWindowSignal signal)
+        private void OnShowUIRequestReceived(ShowUpgradeWindowSignal signal)
         {
             if (_runtimeStats.CurrentHealth <= 0f) return;
             
@@ -96,7 +96,7 @@ namespace ArenaShooter.UI.Upgrades
             _modifierService.ApplyUpgrade(selectedUpgrade);
             _view.Hide();
             
-            _signalBus.Fire(new GameStatesSignals.RequestGameplayStateSignal());
+            _signalBus.Fire(new RequestGameplayStateSignal());
         }
     }
 }

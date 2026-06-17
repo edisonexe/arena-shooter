@@ -46,7 +46,7 @@ namespace ArenaShooter.Services.Progression
             {
                 OnLevelChanged?.Invoke(_currentLevel);
                 
-                _signalBus.Fire(new GameStatesSignals.LevelUpSignal());
+                _signalBus.Fire(new LevelUpSignal());
             }
             
             OnXpChanged?.Invoke(_currentXp, _xpToNextLevel);

@@ -9,8 +9,8 @@ namespace ArenaShooter.Infrastructure.StateMachine.States
         private readonly GameStateMachine _stateMachine;
         private readonly SignalBus _signalBus;
 
-        private readonly Action<GameStatesSignals.PlayerDiedSignal> _onPlayerDiedCache;
-        private readonly Action<GameStatesSignals.LevelUpSignal> _onLevelUpCache;
+        private readonly Action<PlayerDiedSignal> _onPlayerDiedCache;
+        private readonly Action<LevelUpSignal> _onLevelUpCache;
         
         public GameplayState(GameStateMachine stateMachine, SignalBus signalBus)
         {
@@ -34,12 +34,12 @@ namespace ArenaShooter.Infrastructure.StateMachine.States
             _signalBus.Unsubscribe(_onLevelUpCache);
         }
 
-        private void OnPlayerDied(GameStatesSignals.PlayerDiedSignal signal)
+        private void OnPlayerDied(PlayerDiedSignal signal)
         {
             _stateMachine.TransitionTo<GameOverState>();
         }
 
-        private void OnLevelUp(GameStatesSignals.LevelUpSignal signal)
+        private void OnLevelUp(LevelUpSignal signal)
         {
             _stateMachine.TransitionTo<UpgradeSelectionState>();
         }

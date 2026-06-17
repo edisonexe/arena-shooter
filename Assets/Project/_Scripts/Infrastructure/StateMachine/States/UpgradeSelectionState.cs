@@ -9,7 +9,7 @@ namespace ArenaShooter.Infrastructure.StateMachine.States
         
         private readonly GameStateMachine _stateMachine;
         private readonly SignalBus _signalBus;
-        private readonly Action<GameStatesSignals.RequestGameplayStateSignal> _onGameplayRequestedCache;
+        private readonly Action<RequestGameplayStateSignal> _onGameplayRequestedCache;
         
         public UpgradeSelectionState(GameStateMachine stateMachine, SignalBus signalBus)
         {
@@ -24,7 +24,7 @@ namespace ArenaShooter.Infrastructure.StateMachine.States
             Time.timeScale = 0f;
             _signalBus.Subscribe(_onGameplayRequestedCache);
             
-            _signalBus.Fire(new GameStatesSignals.ShowUpgradeWindowSignal());
+            _signalBus.Fire(new ShowUpgradeWindowSignal());
         }
 
         public void Exit()
@@ -33,7 +33,7 @@ namespace ArenaShooter.Infrastructure.StateMachine.States
             _signalBus.Unsubscribe(_onGameplayRequestedCache);
         }
         
-        private void OnGameplayRequested(GameStatesSignals.RequestGameplayStateSignal signal)
+        private void OnGameplayRequested(RequestGameplayStateSignal signal)
         {
             _stateMachine.TransitionTo<GameplayState>();
         }
