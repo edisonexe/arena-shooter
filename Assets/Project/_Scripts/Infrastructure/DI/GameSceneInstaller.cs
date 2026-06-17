@@ -10,6 +10,7 @@ using ArenaShooter.Services.Combat;
 using ArenaShooter.Services.Input;
 using ArenaShooter.Services.Progression;
 using ArenaShooter.UI;
+using ArenaShooter.UI.GameOver;
 using ArenaShooter.UI.HUD;
 using ArenaShooter.UI.Upgrades;
 using UnityEngine;
@@ -42,6 +43,7 @@ namespace ArenaShooter.Infrastructure.DI
         [SerializeField] private UpgradeWindowView _upgradeWindowView;
         [SerializeField] private TimerView _timerView;
         [SerializeField] private WaveHUDView _waveHUDView;
+        [SerializeField] private GameOverWindowView _gameOverWindowView;
         
         [Header("Progression Databases")]
         [SerializeField] private UpgradeDatabase _upgradeDatabase;
@@ -57,11 +59,13 @@ namespace ArenaShooter.Infrastructure.DI
             InstallHero();
             InstallHUDModules();
             InstallProgressionUI();
+            InstallGameOverUI();
         }
 
         private void InstallInfrastructure()
         {
             Container.Bind<SignalBus>().AsSingle();
+            
             Container.BindInterfacesAndSelfTo<NewInputService>().AsSingle().NonLazy();
         }
 
@@ -132,6 +136,12 @@ namespace ArenaShooter.Infrastructure.DI
             Container.BindInterfacesAndSelfTo<UpgradeWindowPresenter>().AsSingle().NonLazy();
         }
         
+        private void InstallGameOverUI()
+        {
+            Container.BindInstance(_gameOverWindowView).AsSingle();
+            Container.BindInterfacesAndSelfTo<GameOverPresenter>().AsSingle().NonLazy();
+        }
+        
         private void ValidateInInspector()
         {
             if (!_heroConfig) Debug.LogError("[GameSceneInstaller] HeroConfig is not assigned!", this);
@@ -148,6 +158,7 @@ namespace ArenaShooter.Infrastructure.DI
             if (!_upgradeWindowView) Debug.LogError("[GameSceneInstaller] UpgradeWindowView is not assigned!", this);
             if (!_timerView) Debug.LogError("[GameSceneInstaller] TimerView is not assigned!", this);
             if (!_waveHUDView) Debug.LogError("[GameSceneInstaller] WaveHUDView is not assigned!", this);
+            if (!_gameOverWindowView) Debug.LogError("[GameSceneInstaller] GameOverWindowView is not assigned!", this);
         }
     }
 }
