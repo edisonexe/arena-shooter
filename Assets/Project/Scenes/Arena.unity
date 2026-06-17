@@ -3036,8 +3036,11 @@ MonoBehaviour:
   _bulletsParent: {fileID: 127525452}
   _enemyPrefab: {fileID: 1868490016661700242, guid: cc19c8b1c4e03d34b9b947cf58972bbd, type: 3}
   _enemiesParent: {fileID: 637140488}
-  _initialBulletCapacity: 64
-  _initialEnemyCapacity: 64
+  _xpGemPrefab: {fileID: 7481930665293502049, guid: 38c5523cfc903e8428f8547ed9ee4cfe, type: 3}
+  _xpGemsParent: {fileID: 2045206961}
+  _initialBulletCapacity: 128
+  _initialEnemyCapacity: 128
+  _initialGemCapacity: 128
   _gameplayHUDView: {fileID: 139674754}
   _upgradeWindowView: {fileID: 1747364245}
   _timerView: {fileID: 139674758}
@@ -3166,6 +3169,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2036213520}
   m_CullTransparentMesh: 1
+--- !u!1 &2045206960
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2045206961}
+  m_Layer: 0
+  m_Name: XPGems Pool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2045206961
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2045206960}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2053431442
 GameObject:
   m_ObjectHideFlags: 0
@@ -3672,3 +3706,4 @@ SceneRoots:
   - {fileID: 1091746003}
   - {fileID: 127525452}
   - {fileID: 637140488}
+  - {fileID: 2045206961}

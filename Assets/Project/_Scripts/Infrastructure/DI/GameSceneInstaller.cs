@@ -3,6 +3,7 @@ using ArenaShooter.Configs.Enemies;
 using ArenaShooter.Configs.Upgrades;
 using ArenaShooter.Gameplay.Enemies;
 using ArenaShooter.Gameplay.Hero;
+using ArenaShooter.Gameplay.Items;
 using ArenaShooter.Gameplay.Weapons;
 using ArenaShooter.Infrastructure.Pooling;
 using ArenaShooter.Infrastructure.Signals;
@@ -25,19 +26,21 @@ namespace ArenaShooter.Infrastructure.DI
         [SerializeField] private WeaponConfig _weaponConfig;
         [SerializeField] private WaveConfig _waveConfig;
         
-        [Header("Prefabs & Spawn Points")] [SerializeField]
-        private HeroView _heroViewPrefab;
-
+        [Header("Prefabs & Spawn Points")] 
+        [SerializeField] private HeroView _heroViewPrefab;
         [SerializeField] private Transform _heroSpawnPoint;
         [SerializeField] private Bullet _bulletPrefab;
         [SerializeField] private Transform _bulletsParent;
         [SerializeField] private Enemy _enemyPrefab;
         [SerializeField] private Transform _enemiesParent;
-
+        [SerializeField] private XPGem _xpGemPrefab;
+        [SerializeField] private Transform _xpGemsParent;
+        
         [Header("Pool Capacities")] 
-        [SerializeField] private int _initialBulletCapacity = 128;
-        [SerializeField] private int _initialEnemyCapacity = 64;
-
+        [SerializeField, Min(0)] private int _initialBulletCapacity = 128;
+        [SerializeField, Min(0)] private int _initialEnemyCapacity = 1288;
+        [SerializeField, Min(0)] private int _initialGemCapacity = 128;
+        
         [Header("UI Views")]
         [SerializeField] private GameplayHUDView _gameplayHUDView;
         [SerializeField] private UpgradeWindowView _upgradeWindowView;
@@ -73,7 +76,7 @@ namespace ArenaShooter.Infrastructure.DI
         {
             Container.Bind<SpatialCollisionService>().AsSingle();
             Container.Bind<HeroStatsModifierService>().AsSingle();
-            Container.BindInterfacesAndSelfTo<LevelingService>().AsSingle().NonLazy();
+            Container.Bind<LevelingService>().AsSingle();
         }
 
         private void InstallPools()
@@ -85,6 +88,10 @@ namespace ArenaShooter.Infrastructure.DI
             Container.Bind<ObjectPool<Enemy>>()
                 .AsSingle()
                 .WithArguments(_enemyPrefab, _enemiesParent, _initialEnemyCapacity);
+            
+            Container.Bind<ObjectPool<XPGem>>().
+                AsSingle().
+                WithArguments(_xpGemPrefab, _xpGemsParent, _initialGemCapacity);
         }
         
         private void InstallGameplayManagers()
@@ -95,6 +102,8 @@ namespace ArenaShooter.Infrastructure.DI
 
             Container.BindInterfacesAndSelfTo<EnemyManager>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<EnemyWaveSpawner>().AsSingle().NonLazy();
+            
+            Container.BindInterfacesAndSelfTo<XPGemManager>().AsSingle().NonLazy();
         }
 
         private void InstallHero()
@@ -159,6 +168,8 @@ namespace ArenaShooter.Infrastructure.DI
             if (!_timerView) Debug.LogError("[GameSceneInstaller] TimerView is not assigned!", this);
             if (!_waveHUDView) Debug.LogError("[GameSceneInstaller] WaveHUDView is not assigned!", this);
             if (!_gameOverWindowView) Debug.LogError("[GameSceneInstaller] GameOverWindowView is not assigned!", this);
+            if (!_xpGemPrefab) Debug.LogError("[GameSceneInstaller] XpGemPrefab is missing!", this);
+            if (!_xpGemsParent) Debug.LogError("[GameSceneInstaller] XpGemsParent is missing!", this);
         }
     }
 }
