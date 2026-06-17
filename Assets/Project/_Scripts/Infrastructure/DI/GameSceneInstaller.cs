@@ -65,8 +65,6 @@ namespace ArenaShooter.Infrastructure.DI
             InstallHUDModules();
             InstallProgressionUI();
             InstallGameOverUI();
-            
-            Container.Resolve<GameStateMachine>().TransitionTo<BootstrapState>();
         }
 
         private void InstallInfrastructure()
