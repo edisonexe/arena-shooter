@@ -1,43 +1,54 @@
 ﻿using System;
-using ArenaShooter.Infrastructure.Signals;
-using Zenject;
+using ArenaShooter.Configs;
 
 namespace ArenaShooter.Services.Progression
 {
     public class LevelingService
     {
-        private int _currentLevel = 1;
-        private int _currentXp = 0;
-        private int _xpToNextLevel = 100;
+        private readonly LevelingConfig _config;
         
-        public event Action<int, float> OnXpChanged;
-        public event Action OnLevelUp;
+        private int _currentLevel = 1;
+        private int _currentXp;
+        private int _xpToNextLevel;
+        
+        public event Action<int, int> OnXpChanged; // currentXp, xpToNextLevel
+        public event Action<int> OnLevelChanged; // new lvl
+        public event Action OnLevelUp; // ui action
 
+        public int CurrentLevel => _currentLevel;
+        public int CurrentXp => _currentXp;
+        public int XpToNextLevel => _xpToNextLevel;
+        public float ProgressNormalized => _xpToNextLevel > 0 ? (float)_currentXp / _xpToNextLevel : 0f;
+        
+        public LevelingService(LevelingConfig config)
+        {
+            _config = config ?? throw new ArgumentNullException(nameof(config));
+            _xpToNextLevel = _config.BaseXpToNextLevel;
+        }
+        
         public void AddXp(int amount)
         {
             if (amount <= 0) return;
-            
+
             _currentXp += amount;
-            
+            bool levelUpOccurred = false;
+
             while (_currentXp >= _xpToNextLevel)
             {
                 _currentXp -= _xpToNextLevel;
-                LevelUp();
+                _currentLevel++;
+                _xpToNextLevel = UnityEngine.Mathf.RoundToInt(_xpToNextLevel * _config.XpMultiplier);
+                levelUpOccurred = true;
             }
 
-            float progressNormalized = (float)_currentXp / _xpToNextLevel;
-            OnXpChanged?.Invoke(_currentLevel, progressNormalized);
-        }
-
-        private void LevelUp()
-        {
-            _currentLevel++;
+            if (levelUpOccurred)
+            {
+                UnityEngine.Debug.LogWarning($"[Leveling] LEVEL UP! Current Level: {_currentLevel}. Next target: {_xpToNextLevel} XP");
+                OnLevelChanged?.Invoke(_currentLevel);
+                OnLevelUp?.Invoke();
+            }
             
-            _xpToNextLevel = UnityEngine.Mathf.RoundToInt(_xpToNextLevel * 1.2f);
-
-            UnityEngine.Debug.LogWarning($"[Leveling] LEVEL UP! Current Level: {_currentLevel}. Next target: {_xpToNextLevel} XP");
-            
-            OnLevelUp?.Invoke();
+            OnXpChanged?.Invoke(_currentXp, _xpToNextLevel);
         }
     }
 }

@@ -25,6 +25,7 @@ namespace ArenaShooter.Infrastructure.DI
         [SerializeField] private HeroConfig _heroConfig;
         [SerializeField] private WeaponConfig _weaponConfig;
         [SerializeField] private WaveConfig _waveConfig;
+        [SerializeField] private LevelingConfig _levelingConfig;
         
         [Header("Prefabs & Spawn Points")] 
         [SerializeField] private HeroView _heroViewPrefab;
@@ -74,6 +75,8 @@ namespace ArenaShooter.Infrastructure.DI
 
         private void InstallCoreServices()
         {
+            Container.BindInstance(_levelingConfig).AsSingle();
+            
             Container.Bind<SpatialCollisionService>().AsSingle();
             Container.Bind<HeroStatsModifierService>().AsSingle();
             Container.Bind<LevelingService>().AsSingle();
@@ -156,6 +159,7 @@ namespace ArenaShooter.Infrastructure.DI
             if (!_heroConfig) Debug.LogError("[GameSceneInstaller] HeroConfig is not assigned!", this);
             if (!_weaponConfig) Debug.LogError("[GameSceneInstaller] WeaponConfig is not assigned!", this);
             if (!_waveConfig) Debug.LogError("[GameSceneInstaller] WaveConfig is not assigned!", this);
+            if (!_levelingConfig) Debug.LogError("[GameSceneInstaller] LevelingConfig is not assigned!", this);
             if (!_heroViewPrefab) Debug.LogError("[GameSceneInstaller] HeroViewPrefab is not assigned!", this);
             if (!_heroSpawnPoint) Debug.LogError("[GameSceneInstaller] HeroSpawnPoint Transform is not assigned!", this);
             if (!_bulletPrefab) Debug.LogError("[GameSceneInstaller] BulletPrefab is not assigned!", this);
