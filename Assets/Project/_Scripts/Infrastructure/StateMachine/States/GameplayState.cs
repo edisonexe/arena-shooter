@@ -1,5 +1,6 @@
 ﻿using System;
 using ArenaShooter.Infrastructure.Signals;
+using ArenaShooter.Services.Gameplay;
 using UnityEngine;
 
 namespace ArenaShooter.Infrastructure.StateMachine.States
@@ -8,28 +9,40 @@ namespace ArenaShooter.Infrastructure.StateMachine.States
     {
         private readonly GameStateMachine _stateMachine;
         private readonly SignalBus _signalBus;
-
+        private readonly MatchDurationSystem _matchDurationSystem;
+        
         private readonly Action<PlayerDiedSignal> _onPlayerDiedCache;
         private readonly Action<LevelUpSignal> _onLevelUpCache;
+        private readonly Action _onTimeoutCache;
         
-        public GameplayState(GameStateMachine stateMachine, SignalBus signalBus)
+        public GameplayState(GameStateMachine stateMachine, SignalBus signalBus, MatchDurationSystem matchDurationSystem)
         {
-            _stateMachine = stateMachine;
-            _signalBus = signalBus;
+            _stateMachine = stateMachine ?? throw new ArgumentNullException(nameof(stateMachine));
+            _signalBus = signalBus ?? throw new ArgumentNullException(nameof(signalBus));
+            _matchDurationSystem = matchDurationSystem ?? throw new ArgumentNullException(nameof(matchDurationSystem));
             
             _onPlayerDiedCache = OnPlayerDied;
             _onLevelUpCache = OnLevelUp;
+            _onTimeoutCache = OnMatchTimeout;
         }
 
         public void Enter()
         {
             Time.timeScale = 1f;
+            
+            _matchDurationSystem.ResetTimer();
+            _matchDurationSystem.StartTimer();
+            
+            _matchDurationSystem.OnTimeout += _onTimeoutCache;
             _signalBus.Subscribe(_onPlayerDiedCache);
             _signalBus.Subscribe(_onLevelUpCache);
         }
 
         public void Exit()
         {
+            _matchDurationSystem.OnTimeout -= _onTimeoutCache;
+            _matchDurationSystem.StopTimer();
+            
             _signalBus.Unsubscribe(_onPlayerDiedCache);
             _signalBus.Unsubscribe(_onLevelUpCache);
         }
@@ -42,6 +55,11 @@ namespace ArenaShooter.Infrastructure.StateMachine.States
         private void OnLevelUp(LevelUpSignal signal)
         {
             _stateMachine.TransitionTo<UpgradeSelectionState>();
+        }
+        
+        private void OnMatchTimeout()
+        {
+            _stateMachine.TransitionTo<GameVictoryState>();
         }
     }
 }

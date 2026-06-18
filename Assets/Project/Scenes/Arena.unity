@@ -323,9 +323,6 @@ GameObject:
   - component: {fileID: 139674754}
   - component: {fileID: 139674759}
   - component: {fileID: 139674758}
-  - component: {fileID: 139674762}
-  - component: {fileID: 139674761}
-  - component: {fileID: 139674760}
   m_Layer: 5
   m_Name: Gameplay HUD
   m_TagString: Untagged
@@ -443,64 +440,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArenaShooter.UI.HUD.WaveHUDView
   _waveText: {fileID: 837315917}
---- !u!114 &139674760
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 139674752}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: db67eddc5b1f4ce0ba4050c0b4388dd1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ArenaShooter.UI.HUD.DamageVignetteVisual
-  _vignetteImage: {fileID: 139674761}
-  _fadeSpeed: 5
-  _currentAlpha: 0
-  _vignetteColor:
-    r: 0
-    g: 0
-    b: 0
-    a: 0
---- !u!114 &139674761
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 139674752}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &139674762
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 139674752}
-  m_CullTransparentMesh: 1
 --- !u!1 &199521972
 GameObject:
   m_ObjectHideFlags: 0
@@ -698,6 +637,7 @@ Transform:
   - {fileID: 94607084}
   - {fileID: 2053431445}
   - {fileID: 2031782381}
+  - {fileID: 1179949198}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &308601355
@@ -1808,6 +1748,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1030138224}
   m_CullTransparentMesh: 1
+--- !u!1 &1179949197
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1179949198}
+  - component: {fileID: 1179949199}
+  m_Layer: 0
+  m_Name: Arena Bounds
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1179949198
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1179949197}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 292343027}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1179949199
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1179949197}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a3ba7ca4b9f407cb07cd4edd0f48e4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ArenaShooter.Services.Gameplay.ArenaBoundsService
+  _center: {x: 0, y: 0}
+  _size: {x: 40, y: 40}
 --- !u!1 &1189833666
 GameObject:
   m_ObjectHideFlags: 0
@@ -2211,7 +2197,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
@@ -3096,6 +3082,7 @@ MonoBehaviour:
   _weaponConfig: {fileID: 11400000, guid: 0375300afeda3674aa72bfa10cdf6720, type: 2}
   _waveConfig: {fileID: 11400000, guid: 393f38ebb876e884eb6dd1276b257ded, type: 2}
   _levelingConfig: {fileID: 11400000, guid: 0d4e3223b725be84fba996774912b91e, type: 2}
+  _matchConfig: {fileID: 11400000, guid: 41f798aeec5d98a48bb6cd96f43b17b7, type: 2}
   _heroViewPrefab: {fileID: 7593563798392002025, guid: 355d98916ec452a43aaf7f3ddccbf549, type: 3}
   _heroSpawnPoint: {fileID: 308601356}
   _bulletPrefab: {fileID: 7188943504788321120, guid: 99000734532235048b7cf1140d653201, type: 3}
@@ -3114,6 +3101,7 @@ MonoBehaviour:
   _gameOverWindowView: {fileID: 199521974}
   _globalVolume: {fileID: 2031782382}
   _upgradeDatabase: {fileID: 11400000, guid: 31d4d974cc6e7fe4888fad91aa32796f, type: 2}
+  _arenaBoundsService: {fileID: 1179949199}
 --- !u!114 &2008188743
 MonoBehaviour:
   m_ObjectHideFlags: 0

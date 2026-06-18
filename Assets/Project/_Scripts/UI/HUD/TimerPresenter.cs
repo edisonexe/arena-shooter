@@ -1,32 +1,29 @@
 ﻿using System;
 using ArenaShooter.Gameplay.Enemies;
+using ArenaShooter.Services.Gameplay;
 using UnityEngine;
 using Zenject;
 
 namespace ArenaShooter.UI.HUD
 {
-    public class TimerPresenter : IInitializable, IDisposable
+    public class TimerPresenter : ITickable
     {
         private readonly ITimerView _view;
         private readonly EnemyWaveSpawner _waveSpawner;
+        private readonly MatchDurationSystem _durationSystem;
         
         private int _lastUpdatedSecond = -1;
-        
-        public TimerPresenter(TimerView view, EnemyWaveSpawner waveSpawner)
+
+        public TimerPresenter(ITimerView view, MatchDurationSystem durationSystem)
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));
-            _waveSpawner = waveSpawner ?? throw new ArgumentNullException(nameof(waveSpawner));
+            _durationSystem = durationSystem ?? throw new ArgumentNullException(nameof(durationSystem));
         }
 
-        public void Initialize()
+        public void Tick()
         {
-            _waveSpawner.OnGameTimeUpdated += HandleGameTimeUpdated;
-            _view.SetTime(0, 0);
-        }
-
-        private void HandleGameTimeUpdated(float totalSeconds)
-        {
-            int totalIntSeconds = Mathf.FloorToInt(totalSeconds);
+            float remainingTime = _durationSystem.RemainingTime;
+            int totalIntSeconds = Mathf.FloorToInt(remainingTime);
 
             if (totalIntSeconds != _lastUpdatedSecond)
             {
@@ -37,11 +34,6 @@ namespace ArenaShooter.UI.HUD
 
                 _view.SetTime(minutes, seconds);
             }
-        }
-
-        public void Dispose()
-        {
-            _waveSpawner.OnGameTimeUpdated -= HandleGameTimeUpdated;
         }
     }
 }

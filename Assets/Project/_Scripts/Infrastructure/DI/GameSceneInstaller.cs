@@ -9,6 +9,7 @@ using ArenaShooter.Gameplay.Camera;
 using ArenaShooter.Infrastructure.Signals;
 using ArenaShooter.Infrastructure.StateMachine;
 using ArenaShooter.Services.Combat;
+using ArenaShooter.Services.Gameplay;
 using ArenaShooter.Services.Input;
 using ArenaShooter.Services.Progression;
 using ArenaShooter.UI.GameOver;
@@ -27,6 +28,7 @@ namespace ArenaShooter.Infrastructure.DI
         [SerializeField] private WeaponConfig _weaponConfig;
         [SerializeField] private WaveConfig _waveConfig;
         [SerializeField] private LevelingConfig _levelingConfig;
+        [SerializeField] private MatchConfig _matchConfig;
         
         [Header("Prefabs & Spawn Points")] 
         [SerializeField] private HeroView _heroViewPrefab;
@@ -56,6 +58,9 @@ namespace ArenaShooter.Infrastructure.DI
         [Header("Progression Databases")]
         [SerializeField] private UpgradeDatabase _upgradeDatabase;
 
+        [Header("Gameplay Services on Scene")]
+        [SerializeField] private ArenaBoundsService _arenaBoundsService;
+        
         public override void InstallBindings()
         {
             ValidateInInspector();
@@ -85,10 +90,14 @@ namespace ArenaShooter.Infrastructure.DI
         private void InstallCoreServices()
         {
             Container.BindInstance(_levelingConfig).AsSingle();
+            Container.BindInstance(_matchConfig).AsSingle();
+            Container.BindInstance(_arenaBoundsService).AsSingle();
             
             Container.Bind<SpatialCollisionService>().AsSingle();
             Container.Bind<HeroStatsModifierService>().AsSingle();
             Container.Bind<LevelingService>().AsSingle();
+            
+            Container.BindInterfacesAndSelfTo<MatchDurationSystem>().AsSingle().NonLazy();
         }
 
         private void InstallPools()
@@ -181,6 +190,7 @@ namespace ArenaShooter.Infrastructure.DI
             if (!_weaponConfig) Debug.LogError("[GameSceneInstaller] WeaponConfig is not assigned!", this);
             if (!_waveConfig) Debug.LogError("[GameSceneInstaller] WaveConfig is not assigned!", this);
             if (!_levelingConfig) Debug.LogError("[GameSceneInstaller] LevelingConfig is not assigned!", this);
+            if (!_matchConfig) Debug.LogError("[GameSceneInstaller] MatchConfig is not assigned!", this);
             if (!_heroViewPrefab) Debug.LogError("[GameSceneInstaller] HeroViewPrefab is not assigned!", this);
             if (!_heroSpawnPoint) Debug.LogError("[GameSceneInstaller] HeroSpawnPoint Transform is not assigned!", this);
             if (!_bulletPrefab) Debug.LogError("[GameSceneInstaller] BulletPrefab is not assigned!", this);
@@ -196,6 +206,7 @@ namespace ArenaShooter.Infrastructure.DI
             if (!_xpGemPrefab) Debug.LogError("[GameSceneInstaller] XpGemPrefab is missing!", this);
             if (!_xpGemsParent) Debug.LogError("[GameSceneInstaller] XpGemsParent is missing!", this);
             if (!_globalVolume) Debug.LogError("[GameSceneInstaller] GlobalVolume is not assigned!", this);
+            if (!_arenaBoundsService) Debug.LogError("[GameSceneInstaller] ArenaBoundsService is not assigned!", this);
         }
     }
 }

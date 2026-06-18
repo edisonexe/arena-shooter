@@ -3,6 +3,7 @@ using ArenaShooter.Configs.Enemies;
 using ArenaShooter.Gameplay.Hero;
 using ArenaShooter.Infrastructure.Pooling;
 using ArenaShooter.Infrastructure.Signals;
+using ArenaShooter.Services.Gameplay;
 using UnityEngine;
 using Zenject;
 
@@ -15,31 +16,37 @@ namespace ArenaShooter.Gameplay.Enemies
         private readonly EnemyManager _enemyManager;
         private readonly Transform _heroTransform;
         private readonly SignalBus _signalBus;
+        private readonly ArenaBoundsService _arenaBoundsService;
+        private readonly MatchDurationSystem _durationSystem;
         
         private int _currentWave = 1;
-        private float _gameTimeTimer;
-        private float _spawnCooldownTimer;
         
+        private float _spawnCooldownTimer;
         private float _currentSpawnInterval;
         private bool _isSpawningActive = true;
+
+        private const float SPAWN_RAD = 20f;
         
         private Action<PlayerDiedSignal> _onPlayerDiedCache;
         
         public event Action<int> OnWaveChanged;
-        public event Action<float> OnGameTimeUpdated;
 
         public EnemyWaveSpawner(
             WaveConfig config, 
             ObjectPool<Enemy> enemyPool, 
             EnemyManager enemyManager,
             HeroView heroView,
-            SignalBus signalBus)
+            SignalBus signalBus,
+            ArenaBoundsService arenaBoundsService,
+            MatchDurationSystem durationSystem)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _enemyPool = enemyPool ?? throw new ArgumentNullException(nameof(enemyPool));
             _enemyManager = enemyManager ?? throw new ArgumentNullException(nameof(enemyManager));
             _heroTransform = heroView ? heroView.transform : throw new ArgumentNullException(nameof(heroView));
             _signalBus = signalBus ?? throw new ArgumentNullException(nameof(signalBus));
+            _durationSystem = durationSystem ?? throw new ArgumentNullException(nameof(durationSystem));
+            _arenaBoundsService = arenaBoundsService ?? throw new ArgumentNullException(nameof(arenaBoundsService));
             
             _currentSpawnInterval = _config.BaseSpawnInterval;
         }
@@ -55,10 +62,7 @@ namespace ArenaShooter.Gameplay.Enemies
             if (!_isSpawningActive) return;
             
             float deltaTime = Time.deltaTime;
-            _gameTimeTimer += deltaTime;
             _spawnCooldownTimer += deltaTime;
-            
-            OnGameTimeUpdated?.Invoke(_gameTimeTimer);
             
             if (_spawnCooldownTimer >= _currentSpawnInterval)
             {
@@ -66,7 +70,8 @@ namespace ArenaShooter.Gameplay.Enemies
                 SpawnEnemyWavePack();
             }
             
-            int totalSecondsPassed = Mathf.FloorToInt(_gameTimeTimer);
+            float currentMatchTime = _durationSystem.ElapsedTime;
+            int totalSecondsPassed = Mathf.FloorToInt(currentMatchTime);
             int calculatedCurrentWaveSeconds = totalSecondsPassed - ((_currentWave - 1) * _config.WaveDurationSeconds);
 
             if (calculatedCurrentWaveSeconds >= _config.WaveDurationSeconds)
@@ -85,9 +90,11 @@ namespace ArenaShooter.Gameplay.Enemies
             {
                 Enemy enemy = _enemyPool.Get();
                 
-                Vector2 randomCircle = UnityEngine.Random.insideUnitCircle.normalized * UnityEngine.Random.Range(12f, 18f);
-                Vector3 spawnPosition = _heroTransform.position + new Vector3(randomCircle.x, 0f, randomCircle.y);
+                Vector2 randomOffset = UnityEngine.Random.insideUnitCircle.normalized * SPAWN_RAD;
+                Vector3 spawnPosition = _heroTransform.position + new Vector3(randomOffset.x, 0f, randomOffset.y);
 
+                spawnPosition = _arenaBoundsService.ClampToArena(spawnPosition);
+                
                 enemy.Initialize(spawnPosition);
 
                 enemy.Spawn();
