@@ -5,10 +5,10 @@ using ArenaShooter.Gameplay.Enemies;
 using ArenaShooter.Gameplay.Hero;
 using ArenaShooter.Gameplay.Items;
 using ArenaShooter.Gameplay.Weapons;
+using ArenaShooter.Gameplay.Camera;
 using ArenaShooter.Infrastructure.Pooling;
 using ArenaShooter.Infrastructure.Signals;
 using ArenaShooter.Infrastructure.StateMachine;
-using ArenaShooter.Infrastructure.StateMachine.States;
 using ArenaShooter.Services.Combat;
 using ArenaShooter.Services.Input;
 using ArenaShooter.Services.Progression;
@@ -56,7 +56,7 @@ namespace ArenaShooter.Infrastructure.DI
         public override void InstallBindings()
         {
             ValidateInInspector();
-            
+
             InstallInfrastructure();
             InstallCoreServices();
             InstallPools();
@@ -67,6 +67,7 @@ namespace ArenaShooter.Infrastructure.DI
             InstallGameOverUI();
         }
 
+        
         private void InstallInfrastructure()
         {
             Container.Bind<SignalBus>().AsSingle();
@@ -74,6 +75,8 @@ namespace ArenaShooter.Infrastructure.DI
             Container.BindInterfacesAndSelfTo<NewInputService>().AsSingle().NonLazy();
             Container.Bind<StateFactory>().AsSingle();
             Container.BindInterfacesAndSelfTo<GameStateMachine>().AsSingle().NonLazy();
+            
+            Container.BindInterfacesAndSelfTo<CameraFollower>().AsSingle().NonLazy();
         }
 
         private void InstallCoreServices()
