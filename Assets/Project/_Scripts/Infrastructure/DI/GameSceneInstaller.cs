@@ -6,7 +6,6 @@ using ArenaShooter.Gameplay.Hero;
 using ArenaShooter.Gameplay.Items;
 using ArenaShooter.Gameplay.Weapons;
 using ArenaShooter.Gameplay.Camera;
-using ArenaShooter.Infrastructure.Pooling;
 using ArenaShooter.Infrastructure.Signals;
 using ArenaShooter.Infrastructure.StateMachine;
 using ArenaShooter.Services.Combat;
@@ -16,6 +15,7 @@ using ArenaShooter.UI.GameOver;
 using ArenaShooter.UI.HUD;
 using ArenaShooter.UI.Upgrades;
 using UnityEngine;
+using UnityEngine.Rendering;
 using Zenject;
 
 namespace ArenaShooter.Infrastructure.DI
@@ -49,6 +49,9 @@ namespace ArenaShooter.Infrastructure.DI
         [SerializeField] private TimerView _timerView;
         [SerializeField] private WaveHUDView _waveHUDView;
         [SerializeField] private GameOverWindowView _gameOverWindowView;
+        
+        [Header("Render Settings")]
+        [SerializeField] private Volume _globalVolume;
         
         [Header("Progression Databases")]
         [SerializeField] private UpgradeDatabase _upgradeDatabase;
@@ -90,15 +93,15 @@ namespace ArenaShooter.Infrastructure.DI
 
         private void InstallPools()
         {
-            Container.Bind<ObjectPool<Bullet>>()
+            Container.Bind<Pooling.ObjectPool<Bullet>>()
                 .AsSingle()
                 .WithArguments(_bulletPrefab, _bulletsParent, _initialBulletCapacity);
 
-            Container.Bind<ObjectPool<Enemy>>()
+            Container.Bind<Pooling.ObjectPool<Enemy>>()
                 .AsSingle()
                 .WithArguments(_enemyPrefab, _enemiesParent, _initialEnemyCapacity);
             
-            Container.Bind<ObjectPool<XPGem>>().
+            Container.Bind<Pooling.ObjectPool<XPGem>>().
                 AsSingle().
                 WithArguments(_xpGemPrefab, _xpGemsParent, _initialGemCapacity);
         }
@@ -136,6 +139,7 @@ namespace ArenaShooter.Infrastructure.DI
             Container.BindInterfacesAndSelfTo<HeroMovementSystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<HeroRotationSystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<HeroCombatSystem>().AsSingle();
+            
             Container.BindInterfacesAndSelfTo<HeroHealthSystem>().AsSingle();
             
             Container.BindInterfacesAndSelfTo<HeroEntity>().AsSingle().NonLazy();
@@ -151,6 +155,11 @@ namespace ArenaShooter.Infrastructure.DI
 
             Container.BindInterfacesAndSelfTo<GameplayHUDView>().FromInstance(_gameplayHUDView).AsSingle();
             Container.BindInterfacesAndSelfTo<GameplayHUDPresenter>().AsSingle().NonLazy();
+            
+            Container.BindInterfacesAndSelfTo<VolumeVignetteVisual>()
+                .AsSingle()
+                .WithArguments(_globalVolume)
+                .NonLazy();
         }
 
         private void InstallProgressionUI()
@@ -186,6 +195,7 @@ namespace ArenaShooter.Infrastructure.DI
             if (!_gameOverWindowView) Debug.LogError("[GameSceneInstaller] GameOverWindowView is not assigned!", this);
             if (!_xpGemPrefab) Debug.LogError("[GameSceneInstaller] XpGemPrefab is missing!", this);
             if (!_xpGemsParent) Debug.LogError("[GameSceneInstaller] XpGemsParent is missing!", this);
+            if (!_globalVolume) Debug.LogError("[GameSceneInstaller] GlobalVolume is not assigned!", this);
         }
     }
 }
