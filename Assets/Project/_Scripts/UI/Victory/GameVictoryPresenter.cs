@@ -1,16 +1,18 @@
 ﻿using System;
+using ArenaShooter.Infrastructure.Reset;
 using ArenaShooter.Services.Gameplay;
-using UnityEngine;
 using Zenject;
 
 namespace ArenaShooter.UI.Victory
 {
-    public class GameVictoryPresenter : IInitializable, IDisposable
+    public class GameVictoryPresenter : IInitializable, IDisposable, IResettable
     {
         private readonly IGameVictoryWindowView _view;
         private readonly MatchDurationSystem _durationSystem;
         private readonly GameNavigationService _navigationService;
 
+        public event Action OnRestartRequested;
+        
         public GameVictoryPresenter(
             IGameVictoryWindowView view, 
             MatchDurationSystem durationSystem, 
@@ -40,8 +42,10 @@ namespace ArenaShooter.UI.Victory
             _durationSystem.OnTimeout -= HandleTimeout;
         }
 
+        public void ResetState() => _view.Hide();
+
         private void HandleTimeout() => _view.Show();
-        private void HandleRestart() => _navigationService.ToGameplay();
+        private void HandleRestart() => OnRestartRequested?.Invoke();
         private void HandleMenu() => _navigationService.ToMainMenu();
     }
 }

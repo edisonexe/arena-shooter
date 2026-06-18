@@ -1,12 +1,17 @@
 ﻿using System;
 using ArenaShooter.Gameplay.Combat;
+using ArenaShooter.Infrastructure.Reset;
+using ArenaShooter.Services.Progression;
 using UnityEngine;
 
 namespace ArenaShooter.Gameplay.Hero
 {
-    public class HeroEntity : IDamageable
+    public class HeroEntity : IDamageable, IResettable
     {
         private readonly HeroHealthSystem _healthSystem;
+        private readonly HeroView _view;
+        private readonly HeroStatsModifierService _modifierService;
+        private readonly Transform _spawnPoint;
 
         public event Action<float> OnHealthChanged
         {
@@ -14,14 +19,40 @@ namespace ArenaShooter.Gameplay.Hero
             remove => _healthSystem.OnHealthChanged -= value;
         }
 
-        public HeroEntity(HeroHealthSystem healthSystem)
+        public HeroEntity(
+            HeroHealthSystem healthSystem, 
+            HeroView view, 
+            HeroStatsModifierService modifierService,
+            Transform spawnPoint)
         {
             _healthSystem = healthSystem ?? throw new ArgumentNullException(nameof(healthSystem));
+            _view = view ?? throw new ArgumentNullException(nameof(view));
+            _modifierService = modifierService ?? throw new ArgumentNullException(nameof(modifierService));
+            _spawnPoint = spawnPoint ?? throw new ArgumentNullException(nameof(spawnPoint));
         }
 
         public void TakeDamage(float amount, Vector3 damageSourcePosition)
         {
             _healthSystem.TakeDamage(amount, damageSourcePosition);
+        }
+        
+        public void ResetState()
+        {
+
+            _view.gameObject.SetActive(true);
+
+            _view.Rigidbody.linearVelocity = Vector3.zero;
+            _view.Rigidbody.angularVelocity = Vector3.zero;
+            _view.Rigidbody.position = _spawnPoint.position;
+            
+            if (_view.VisualRoot)
+            {
+                _view.VisualRoot.rotation = _spawnPoint.rotation;
+            }
+            
+            _healthSystem.ResetHealth();
+
+            _modifierService.ResetModifiersToDefault(); 
         }
     }
 }

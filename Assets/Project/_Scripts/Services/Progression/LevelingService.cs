@@ -1,10 +1,11 @@
 ﻿using System;
 using ArenaShooter.Configs;
+using ArenaShooter.Infrastructure.Reset;
 using ArenaShooter.Infrastructure.Signals;
 
 namespace ArenaShooter.Services.Progression
 {
-    public class LevelingService
+    public class LevelingService : IResettable
     {
         private readonly LevelingConfig _config;
         private readonly SignalBus _signalBus;
@@ -49,6 +50,16 @@ namespace ArenaShooter.Services.Progression
                 _signalBus.Fire(new LevelUpSignal());
             }
             
+            OnXpChanged?.Invoke(_currentXp, _xpToNextLevel);
+        }
+        
+        public void ResetState()
+        {
+            _currentLevel = 1;
+            _currentXp = 0;
+            _xpToNextLevel = _config.BaseXpToNextLevel;
+            
+            OnLevelChanged?.Invoke(_currentLevel);
             OnXpChanged?.Invoke(_currentXp, _xpToNextLevel);
         }
     }

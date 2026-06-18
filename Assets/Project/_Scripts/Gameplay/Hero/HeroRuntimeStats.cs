@@ -5,6 +5,9 @@ namespace ArenaShooter.Gameplay.Hero
 {
     public class HeroRuntimeStats
     {
+        private readonly HeroConfig _heroConfig;
+        private readonly WeaponConfig _weaponConfig;
+        
         public float MoveSpeed { get; private set; }
         public float BulletDamage { get; private set; }
         public float WeaponCooldown { get; private set; }
@@ -14,15 +17,20 @@ namespace ArenaShooter.Gameplay.Hero
 
         public HeroRuntimeStats(HeroConfig heroConfig, WeaponConfig weaponConfig)
         {
-            if (heroConfig == null) throw new ArgumentNullException(nameof(heroConfig));
-            if (weaponConfig == null) throw new ArgumentNullException(nameof(weaponConfig));
+            _heroConfig = heroConfig ?? throw new ArgumentNullException(nameof(heroConfig));
+            _weaponConfig = weaponConfig ?? throw new ArgumentNullException(nameof(weaponConfig));
             
-            MoveSpeed = heroConfig.MoveSpeed;
-            MaxHealth = heroConfig.MaxHealth;
+            ResetToConfigs();
+        }
+        
+        public void ResetToConfigs()
+        {
+            MoveSpeed = _heroConfig.MoveSpeed;
+            MaxHealth = _heroConfig.MaxHealth;
             CurrentHealth = MaxHealth;
 
-            BulletDamage = weaponConfig.Damage;
-            WeaponCooldown = weaponConfig.FireCooldown;
+            BulletDamage = _weaponConfig.Damage;
+            WeaponCooldown = _weaponConfig.FireCooldown;
         }
         
         public void SetCurrentHealth(float health) => CurrentHealth = health;

@@ -30,7 +30,7 @@ namespace ArenaShooter.Services.Input
                 _gameInput.Player.Move.performed -= OnMovePerformed;
                 _gameInput.Player.Move.canceled -= OnMoveCanceled;
                 
-                _gameInput.Player.Disable();
+                _gameInput.Disable();
                 _gameInput.Dispose();
             }
         }

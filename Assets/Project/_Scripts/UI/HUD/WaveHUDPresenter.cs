@@ -1,10 +1,11 @@
 ﻿using System;
 using ArenaShooter.Gameplay.Enemies;
+using ArenaShooter.Infrastructure.Reset;
 using Zenject;
 
 namespace ArenaShooter.UI.HUD
 {
-    public class WaveHUDPresenter : IInitializable, IDisposable
+    public class WaveHUDPresenter : IInitializable, IDisposable, IResettable
     {
         private readonly IWaveHUDView _view;
         private readonly EnemyWaveSpawner _waveSpawner;
@@ -23,14 +24,11 @@ namespace ArenaShooter.UI.HUD
             _view.UpdateWaveText(ST_WAVE_NUM);
         }
 
-        private void HandleWaveChanged(int newWaveNumber)
-        {
-            _view.UpdateWaveText(newWaveNumber);
-        }
+        private void HandleWaveChanged(int newWaveNumber) => _view.UpdateWaveText(newWaveNumber);
+        
 
-        public void Dispose()
-        {
-            _waveSpawner.OnWaveChanged -= HandleWaveChanged;
-        }
+        public void Dispose() => _waveSpawner.OnWaveChanged -= HandleWaveChanged;
+
+        public void ResetState() => _view.UpdateWaveText(ST_WAVE_NUM);
     }
 }

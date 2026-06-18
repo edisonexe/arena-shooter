@@ -6,6 +6,7 @@ using ArenaShooter.Gameplay.Hero;
 using ArenaShooter.Gameplay.Items;
 using ArenaShooter.Gameplay.Weapons;
 using ArenaShooter.Gameplay.Camera;
+using ArenaShooter.Infrastructure.Reset;
 using ArenaShooter.Services.Combat;
 using ArenaShooter.Services.Gameplay;
 using ArenaShooter.Services.Progression;
@@ -64,11 +65,15 @@ namespace ArenaShooter.Infrastructure.DI
             InstallSceneInfrastructure();
             InstallCoreServices();
             InstallPools();
+            
             InstallGameplayManagers();
             InstallHero();
+            
             InstallHUDModules();
             InstallProgressionUI();
             InstallEndGameUI();
+            
+            InstallResetSystem();
         }
 
         private void InstallSceneInfrastructure()
@@ -83,7 +88,8 @@ namespace ArenaShooter.Infrastructure.DI
             
             Container.Bind<SpatialCollisionService>().AsSingle();
             Container.Bind<HeroStatsModifierService>().AsSingle();
-            Container.Bind<LevelingService>().AsSingle();
+            
+            Container.BindInterfacesAndSelfTo<LevelingService>().AsSingle();
         }
 
         private void InstallPools()
@@ -133,7 +139,10 @@ namespace ArenaShooter.Infrastructure.DI
             
             Container.BindInterfacesAndSelfTo<HeroCombatSystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<HeroHealthSystem>().AsSingle();
-            Container.BindInterfacesAndSelfTo<HeroEntity>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<HeroEntity>()
+                .AsSingle()
+                .WithArguments(_heroSpawnPoint)
+                .NonLazy();
         }
 
         private void InstallHUDModules()
@@ -166,6 +175,23 @@ namespace ArenaShooter.Infrastructure.DI
 
             Container.BindInterfacesAndSelfTo<GameVictoryWindowView>().FromInstance(_gameVictoryWindowView).AsSingle();
             Container.BindInterfacesAndSelfTo<GameVictoryPresenter>().AsSingle().NonLazy();
+        }
+
+        private void InstallResetSystem()
+        {
+            Container.Bind<IResettable>().To<MatchDurationSystem>().FromResolve();
+            Container.Bind<IResettable>().To<LevelingService>().FromResolve();
+            Container.Bind<IResettable>().To<BulletManager>().FromResolve();
+            Container.Bind<IResettable>().To<EnemyManager>().FromResolve();
+            Container.Bind<IResettable>().To<XPGemManager>().FromResolve();
+            Container.Bind<IResettable>().To<HeroEntity>().FromResolve();
+            
+            Container.Bind<IResettable>().To<GameplayHUDPresenter>().FromResolve();
+            Container.Bind<IResettable>().To<WaveHUDPresenter>().FromResolve();
+            Container.Bind<IResettable>().To<GameOverPresenter>().FromResolve();
+            Container.Bind<IResettable>().To<GameVictoryPresenter>().FromResolve();
+            
+            Container.BindInterfacesAndSelfTo<GameResetSystem>().AsSingle().NonLazy();
         }
         
         private void ValidateInInspector()

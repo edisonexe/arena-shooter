@@ -66,6 +66,12 @@ namespace ArenaShooter.Gameplay.Hero
             }
         }
 
+        public void ResetHealth()
+        {
+            _runtimeStats.SetCurrentHealth(_runtimeStats.MaxHealth);
+            OnHealthChanged?.Invoke(1f);
+        }
+        
         private void Die()
         {
             _signalBus.Fire(new PlayerDiedSignal());

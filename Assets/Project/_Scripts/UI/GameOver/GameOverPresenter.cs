@@ -1,17 +1,19 @@
 ﻿using System;
+using ArenaShooter.Infrastructure.Reset;
 using ArenaShooter.Infrastructure.Signals;
 using ArenaShooter.Services.Gameplay;
 using Zenject;
 
 namespace ArenaShooter.UI.GameOver
 {
-    public class GameOverPresenter : IInitializable, IDisposable
+    public class GameOverPresenter : IInitializable, IDisposable, IResettable
     {
         private readonly IGameOverWindowView _view;
         private readonly SignalBus _signalBus;
         private readonly GameNavigationService _navigationService;
 
         private Action<PlayerDiedSignal> _onPlayerDiedCache;
+        public event Action OnRestartRequested;
 
         public GameOverPresenter(
             IGameOverWindowView view, 
@@ -44,8 +46,10 @@ namespace ArenaShooter.UI.GameOver
             _signalBus.Unsubscribe(_onPlayerDiedCache);
         }
 
+        public void ResetState() => _view.Hide();
+
         private void OnPlayerDied(PlayerDiedSignal signal) => _view.Show();
-        private void HandleRestart() => _navigationService.ToGameplay();
+        private void HandleRestart() => OnRestartRequested?.Invoke();
         private void HandleMenu() => _navigationService.ToMainMenu();
     }
 }

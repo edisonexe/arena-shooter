@@ -21,12 +21,7 @@ namespace ArenaShooter.Services.Progression
             _weaponConfig = weaponConfig ?? throw new ArgumentNullException(nameof(weaponConfig));
             _runtimeStats = runtimeStats ?? throw new ArgumentNullException(nameof(runtimeStats));
             
-            foreach (UpgradeType type in Enum.GetValues(typeof(UpgradeType)))
-            {
-                _modifiers[type] = 1.0f;
-            }
-            
-            RecalculateAndApply();
+            ResetModifiersToDefault();
         }
 
         public void ApplyUpgrade(UpgradeConfig upgrade)
@@ -41,6 +36,16 @@ namespace ArenaShooter.Services.Progression
         {
             float newHealth = Mathf.Max(_runtimeStats.CurrentHealth - damageAmount, 0f);
             _runtimeStats.SetCurrentHealth(newHealth);
+        }
+        
+        public void ResetModifiersToDefault()
+        {
+            foreach (UpgradeType type in Enum.GetValues(typeof(UpgradeType)))
+            {
+                _modifiers[type] = 1.0f;
+            }
+
+            _runtimeStats.ResetToConfigs();
         }
         
         private void RecalculateAndApply()

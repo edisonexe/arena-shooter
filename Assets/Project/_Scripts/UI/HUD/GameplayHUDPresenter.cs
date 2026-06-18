@@ -1,11 +1,12 @@
 ﻿using System;
 using ArenaShooter.Gameplay.Hero;
+using ArenaShooter.Infrastructure.Reset;
 using ArenaShooter.Services.Progression;
 using Zenject;
 
 namespace ArenaShooter.UI.HUD
 {
-    public class GameplayHUDPresenter : IInitializable, IDisposable
+    public class GameplayHUDPresenter : IInitializable, IDisposable, IResettable
     {
         private readonly GameplayHUDView _view;
         private readonly HeroEntity _heroEntity;
@@ -27,13 +28,10 @@ namespace ArenaShooter.UI.HUD
         public void Initialize()
         {
             _heroEntity.OnHealthChanged += OnPlayerHealthChanged;
-            
             _levelingService.OnXpChanged += OnXpChanged;
             _levelingService.OnLevelChanged += OnLevelChanged;
             
-            _view.UpdateHealthBar((int)_runtimeStats.CurrentHealth, (int)_runtimeStats.MaxHealth);
-            _view.UpdateXpBar(_levelingService.CurrentXp, _levelingService.XpToNextLevel);
-            _view.UpdateLevelText(_levelingService.CurrentLevel);
+            ResetState();
         }
 
         public void Dispose()
@@ -41,6 +39,13 @@ namespace ArenaShooter.UI.HUD
             _heroEntity.OnHealthChanged -= OnPlayerHealthChanged;
             _levelingService.OnXpChanged -= OnXpChanged;
             _levelingService.OnLevelChanged -= OnLevelChanged;
+        }
+
+        public void ResetState()
+        {
+            _view.UpdateHealthBar((int)_runtimeStats.CurrentHealth, (int)_runtimeStats.MaxHealth);
+            _view.UpdateXpBar(_levelingService.CurrentXp, _levelingService.XpToNextLevel);
+            _view.UpdateLevelText(_levelingService.CurrentLevel);
         }
 
         private void OnPlayerHealthChanged(float normalizedHp)

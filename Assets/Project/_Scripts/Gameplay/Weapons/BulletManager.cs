@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using ArenaShooter.Infrastructure.Pooling;
+using ArenaShooter.Infrastructure.Reset;
 using ArenaShooter.Services.Combat;
 using UnityEngine;
 using Zenject;
 
 namespace ArenaShooter.Gameplay.Weapons
 {
-    public class BulletManager : ITickable
+    public class BulletManager : ITickable, IResettable
     {
         private readonly ObjectPool<Bullet> _bulletPool;
         private readonly SpatialCollisionService _collisionService;
@@ -56,6 +57,15 @@ namespace ArenaShooter.Gameplay.Weapons
             Bullet bullet = _bulletPool.Get();
             bullet.Initialize(position, direction, speed, damage);
             _activeBullets.Add(bullet);
+        }
+        
+        public void ResetState()
+        {
+            for (int i = _activeBullets.Count - 1; i >= 0; i--)
+            {
+                _bulletPool.Return(_activeBullets[i]);
+            }
+            _activeBullets.Clear();
         }
     }
 }

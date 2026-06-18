@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ArenaShooter.Gameplay.Hero;
 using ArenaShooter.Infrastructure.Pooling;
+using ArenaShooter.Infrastructure.Reset;
 using ArenaShooter.Infrastructure.Signals;
 using ArenaShooter.Services.Progression;
 using UnityEngine;
@@ -9,7 +10,7 @@ using Zenject;
 
 namespace ArenaShooter.Gameplay.Items
 {
-    public class XPGemManager : IInitializable, ITickable, IDisposable
+    public class XPGemManager : IInitializable, ITickable, IDisposable, IResettable
     {
         private readonly ObjectPool<XPGem> _gemPool;
         private readonly HeroView _heroView;
@@ -85,6 +86,15 @@ namespace ArenaShooter.Gameplay.Items
                     gem.transform.position = Vector3.MoveTowards(gemPosition, heroPosition, MagnetSpeed * deltaTime);
                 }
             }
+        }
+
+        public void ResetState()
+        {
+            for (int i = _activeGems.Count - 1; i >= 0; i--)
+            {
+                _gemPool.Return(_activeGems[i]);
+            }
+            _activeGems.Clear();
         }
 
         private void HandleEnemyKilled(EnemyKilledSignal signal)

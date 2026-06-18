@@ -1,11 +1,12 @@
 ﻿using System;
 using ArenaShooter.Configs;
+using ArenaShooter.Infrastructure.Reset;
 using UnityEngine;
 using Zenject;
 
 namespace ArenaShooter.Services.Gameplay
 {
-    public class MatchDurationSystem : ITickable
+    public class MatchDurationSystem : ITickable, IResettable
     {
         private readonly MatchConfig _matchConfig;
         
@@ -22,22 +23,12 @@ namespace ArenaShooter.Services.Gameplay
             _matchConfig = matchConfig ?? throw new ArgumentNullException(nameof(matchConfig));
         }
 
-        public void StartTimer()
-        {
-            _isTimerRunning = true;
-        }
+        public void StartTimer() => _isTimerRunning = true;
 
-        public void StopTimer()
-        {
-            _isTimerRunning = false;
-        }
+        public void StopTimer() => _isTimerRunning = false;
 
-        public void ResetTimer()
-        {
-            _elapsedTime = 0f;
-            _isTimerRunning = false;
-        }
-
+        public void ResetState() => _elapsedTime = 0f;
+        
         public void Tick()
         {
             if (!_isTimerRunning) return;

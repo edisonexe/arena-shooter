@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using ArenaShooter.Gameplay.Hero;
 using ArenaShooter.Infrastructure.Pooling;
+using ArenaShooter.Infrastructure.Reset;
 using ArenaShooter.Infrastructure.Signals;
 using UnityEngine;
 using Zenject;
 
 namespace ArenaShooter.Gameplay.Enemies
 {
-    public class EnemyManager : ITickable
+    public class EnemyManager : ITickable, IResettable
     {
         private readonly ObjectPool<Enemy> _enemyPool;
         private readonly HeroView _heroView;
@@ -89,6 +90,15 @@ namespace ArenaShooter.Gameplay.Enemies
             }
 
             return closestEnemy;
+        }
+        
+        public void ResetState()
+        {
+            for (int i = _activeEnemies.Count - 1; i >= 0; i--)
+            {
+                _enemyPool.Return(_activeEnemies[i]);
+            }
+            _activeEnemies.Clear();
         }
     }
 }

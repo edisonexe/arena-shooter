@@ -1,12 +1,13 @@
 ﻿using System;
 using ArenaShooter.Gameplay.Enemies;
+using ArenaShooter.Infrastructure.Reset;
 using ArenaShooter.Services.Gameplay;
 using UnityEngine;
 using Zenject;
 
 namespace ArenaShooter.UI.HUD
 {
-    public class TimerPresenter : ITickable
+    public class TimerPresenter : ITickable, IResettable
     {
         private readonly ITimerView _view;
         private readonly MatchDurationSystem _durationSystem;
@@ -34,5 +35,8 @@ namespace ArenaShooter.UI.HUD
                 _view.SetTime(minutes, seconds);
             }
         }
+
+
+        public void ResetState() => _view.SetTime(0,0);
     }
 }
