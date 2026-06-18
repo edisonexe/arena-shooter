@@ -5,13 +5,14 @@ using UnityEngine;
 
 namespace ArenaShooter.Gameplay.Enemies
 {
-    [RequireComponent(typeof(MeshRenderer), typeof(Collider))]
+    [RequireComponent(typeof(Collider), typeof(DamageVisualTilt))]
     public class Enemy : MonoBehaviour, IPoolable<Enemy>, IDamageable
     {
         [SerializeField] private EnemyConfig _config;
         [SerializeField] private MeshRenderer _meshRenderer;
         [SerializeField] private Collider _collider;
-
+        [SerializeField] private DamageVisualTilt _visualTilt;
+        
         private float _currentHealth;
         
         public bool IsActive { get; private set; }
@@ -44,6 +45,9 @@ namespace ArenaShooter.Gameplay.Enemies
             if (!IsActive) return;
 
             _currentHealth -= amount;
+
+            _visualTilt.ApplyStrictBackwardTilt(transform.forward);
+            
             if (_currentHealth <= 0f)
             {
                 Despawn();
@@ -52,6 +56,8 @@ namespace ArenaShooter.Gameplay.Enemies
         
         public void TickUpdate(Vector3 targetPosition, float deltaTime)
         {
+            _visualTilt.TickTilt(deltaTime);
+            
             Vector3 currentPosition = transform.position;
             Vector3 direction = targetPosition - currentPosition;
             direction.y = 0f;
@@ -70,11 +76,13 @@ namespace ArenaShooter.Gameplay.Enemies
         {
             if (!_config) Debug.LogError("[Enemy] EnemyConfig is missing!", this);
             
-            if (!(_meshRenderer ??= GetComponent<MeshRenderer>())) 
-                Debug.LogError($"[Enemy] MeshRenderer is missing on '{name}'!", this);
+            if (!_meshRenderer) Debug.LogError($"[Enemy] MeshRenderer is missing on '{name}'!", this);
             
             if (!(_collider ??= GetComponent<Collider>())) 
-                Debug.LogError($"[Enemy] Collider2D is missing on '{name}'!", this);
+                Debug.LogError($"[Enemy] Collider is missing on '{name}'!", this);
+            
+            if (!(_visualTilt ??= GetComponent<DamageVisualTilt>())) 
+                Debug.LogError($"[Enemy] DamageVisualTilt is missing on '{name}'!", this);
         }
     }
 }

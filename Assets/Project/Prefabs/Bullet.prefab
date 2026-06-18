@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3079453560711532862}
   - component: {fileID: 6897742287965799427}
   - component: {fileID: 7188943504788321120}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -125,3 +125,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15d66e1d314b43c2af42b4bd7a333f49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArenaShooter.Gameplay.Weapons.Bullet
+  _meshRenderer: {fileID: 3079453560711532862}
+  _collider: {fileID: 6897742287965799427}

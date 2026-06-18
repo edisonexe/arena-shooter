@@ -19,6 +19,10 @@ namespace ArenaShooter.Gameplay.Hero
         private readonly HeroRuntimeStats _runtimeStats;
         private readonly HeroStatsModifierService _modifierService;
 
+        private const float ROT_SPEED = 15f;
+        private Vector3 _lookTargetPosition;
+        private bool _hasLookTarget;
+        
         private readonly Action<Vector3> _onTargetLockedCache;
         private Action<DamageTakenSignal> _onDamageSignalCache;
         public event Action<float> OnHealthChanged;
@@ -40,7 +44,7 @@ namespace ArenaShooter.Gameplay.Hero
             _runtimeStats = runtimeStats ?? throw new ArgumentNullException(nameof(runtimeStats));
             _modifierService = modifierService ?? throw new ArgumentNullException(nameof(modifierService));
 
-            _onTargetLockedCache = RotateHeroTowardsTarget;
+            _onTargetLockedCache = RotateVisualTowardsTarget;
         }
 
         public void Initialize()
@@ -61,15 +65,23 @@ namespace ArenaShooter.Gameplay.Hero
 
         public void Tick()
         {
-            _weapon.TickWeapon(_view.Rigidbody.position, _view.FirePoint, _onTargetLockedCache);
-        }
+            _hasLookTarget = false;
 
+            _weapon.TickWeapon(_view.transform.position, _view.FirePoint, _onTargetLockedCache);
+            
+            UpdateVisualRotation(Time.deltaTime);
+        }
         public void TakeDamage(float amount)
         {
             if (_runtimeStats.CurrentHealth <= 0f) return;
 
             _modifierService.ApplyDamage(amount);
 
+            if (_view.VisualTilt)
+            {
+                _view.VisualTilt.ApplyStrictBackwardTilt(_view.transform.forward);
+            }
+            
             float normalizedHealth = _runtimeStats.MaxHealth > 0f ? _runtimeStats.CurrentHealth / _runtimeStats.MaxHealth : 0f;
             OnHealthChanged?.Invoke(normalizedHealth);
 
@@ -79,15 +91,33 @@ namespace ArenaShooter.Gameplay.Hero
             }
         }
 
-        private void RotateHeroTowardsTarget(UnityEngine.Vector3 targetPosition)
+        private void RotateVisualTowardsTarget(Vector3 targetPosition)
         {
-            _mover.RotateTowards(targetPosition);
+            _lookTargetPosition = targetPosition;
+            _hasLookTarget = true;
+        }
+
+        private void UpdateVisualRotation(float deltaTime)
+        {
+            if (!_hasLookTarget || !_view.VisualRoot) return;
+
+            Vector3 direction = _lookTargetPosition - _view.transform.position;
+            direction.y = 0f;
+
+            if (direction.sqrMagnitude > 0.01f)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(direction);
+
+                _view.VisualRoot.rotation = Quaternion.Slerp(
+                    _view.VisualRoot.rotation, 
+                    targetRotation, 
+                    ROT_SPEED * deltaTime
+                );
+            }
         }
 
         private void Die()
         {
-            Debug.LogError("[HeroEntity] Game Over! Hero is dead.");
-            
             _signalBus.Fire(new PlayerDiedSignal());
             _view.gameObject.SetActive(false);
         }
