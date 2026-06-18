@@ -22,6 +22,10 @@ namespace ArenaShooter.Infrastructure.StateMachine.States
         public void Enter()
         {
             Time.timeScale = 0f;
+            
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            
             _signalBus.Subscribe(_onGameplayRequestedCache);
             
             _signalBus.Fire(new ShowUpgradeWindowSignal());

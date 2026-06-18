@@ -15,11 +15,13 @@ namespace ArenaShooter.Services.Input
         public void Initialize()
         {
             _gameInput = new GameInput();
-            _gameInput.Player.Enable();
             
             _gameInput.Player.Move.performed += OnMovePerformed;
             _gameInput.Player.Move.canceled += OnMoveCanceled;
         }
+
+        public void Enable() => _gameInput.Enable();
+        public void Disable() => _gameInput.Disable();
 
         public void Dispose()
         {

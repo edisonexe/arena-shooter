@@ -9,7 +9,6 @@ namespace ArenaShooter.UI.HUD
     public class TimerPresenter : ITickable
     {
         private readonly ITimerView _view;
-        private readonly EnemyWaveSpawner _waveSpawner;
         private readonly MatchDurationSystem _durationSystem;
         
         private int _lastUpdatedSecond = -1;

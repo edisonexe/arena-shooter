@@ -1,19 +1,24 @@
-﻿namespace ArenaShooter.Infrastructure.StateMachine.States
+﻿using System;
+using ArenaShooter.Services.Gameplay;
+
+namespace ArenaShooter.Infrastructure.StateMachine.States
 {
     public class BootstrapState : IState
     {
-        private readonly GameStateMachine _stateMachine;
+        private readonly GameNavigationService _navigationService;
 
-        public BootstrapState(GameStateMachine stateMachine)
+        public BootstrapState(GameNavigationService navigationService)
         {
-            _stateMachine = stateMachine;
+            _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
         }
 
         public void Enter()
         {
-            _stateMachine.TransitionTo<GameplayState>();
+            _navigationService.ToMainMenu();
         }
 
-        public void Exit() { }
+        public void Exit()
+        {
+        }
     }
 }

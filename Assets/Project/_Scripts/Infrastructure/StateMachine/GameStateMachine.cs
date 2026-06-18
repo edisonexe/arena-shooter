@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ArenaShooter.Infrastructure.StateMachine.States;
+using UnityEngine.SceneManagement;
 using Zenject;
 
 namespace ArenaShooter.Infrastructure.StateMachine
@@ -8,8 +9,10 @@ namespace ArenaShooter.Infrastructure.StateMachine
     public class GameStateMachine : IInitializable
     {
         private readonly StateFactory _factory;
-        private readonly Dictionary<Type, IState> _activeStatesCache = new(4);
-        private IState _currentState;
+        private readonly Dictionary<Type, IState> _activeStatesCache = new(8);
+        
+        public IState CurrentState { get; private set; }
+        public event Action<IState> OnStateChanged;
 
         public GameStateMachine(StateFactory factory)
         {
@@ -23,7 +26,7 @@ namespace ArenaShooter.Infrastructure.StateMachine
 
         public void TransitionTo<TState>() where TState : class, IState
         {
-            _currentState?.Exit();
+            CurrentState?.Exit();
 
             if (!_activeStatesCache.TryGetValue(typeof(TState), out var state))
             {
@@ -31,8 +34,10 @@ namespace ArenaShooter.Infrastructure.StateMachine
                 _activeStatesCache[typeof(TState)] = state;
             }
 
-            _currentState = state;
-            _currentState.Enter();
+            CurrentState = state;
+            CurrentState.Enter();
+            
+            OnStateChanged?.Invoke(CurrentState);
         }
     }
 }

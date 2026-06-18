@@ -2,7 +2,7 @@
 
 namespace ArenaShooter.Infrastructure.StateMachine.States
 {
-    public class GameOverState : IState
+    public class GameMenuState : IState
     {
         public void Enter()
         {

@@ -1,25 +1,23 @@
 ﻿using System;
-using ArenaShooter.Infrastructure.Signals;
 using ArenaShooter.Services.Gameplay;
+using UnityEngine;
 using Zenject;
 
-namespace ArenaShooter.UI.GameOver
+namespace ArenaShooter.UI.Victory
 {
-    public class GameOverPresenter : IInitializable, IDisposable
+    public class GameVictoryPresenter : IInitializable, IDisposable
     {
-        private readonly IGameOverWindowView _view;
-        private readonly SignalBus _signalBus;
+        private readonly IGameVictoryWindowView _view;
+        private readonly MatchDurationSystem _durationSystem;
         private readonly GameNavigationService _navigationService;
 
-        private Action<PlayerDiedSignal> _onPlayerDiedCache;
-
-        public GameOverPresenter(
-            IGameOverWindowView view, 
-            SignalBus signalBus, 
+        public GameVictoryPresenter(
+            IGameVictoryWindowView view, 
+            MatchDurationSystem durationSystem, 
             GameNavigationService navigationService)
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));
-            _signalBus = signalBus ?? throw new ArgumentNullException(nameof(signalBus));
+            _durationSystem = durationSystem ?? throw new ArgumentNullException(nameof(durationSystem));
             _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
         }
 
@@ -27,9 +25,7 @@ namespace ArenaShooter.UI.GameOver
         {
             _view.RestartButton.onClick.AddListener(HandleRestart);
             _view.MenuButton.onClick.AddListener(HandleMenu);
-            
-            _onPlayerDiedCache = OnPlayerDied;
-            _signalBus.Subscribe(_onPlayerDiedCache);
+            _durationSystem.OnTimeout += HandleTimeout;
             
             _view.Hide();
         }
@@ -41,10 +37,10 @@ namespace ArenaShooter.UI.GameOver
                 _view.RestartButton.onClick.RemoveListener(HandleRestart);
                 _view.MenuButton.onClick.RemoveListener(HandleMenu);
             }
-            _signalBus.Unsubscribe(_onPlayerDiedCache);
+            _durationSystem.OnTimeout -= HandleTimeout;
         }
 
-        private void OnPlayerDied(PlayerDiedSignal signal) => _view.Show();
+        private void HandleTimeout() => _view.Show();
         private void HandleRestart() => _navigationService.ToGameplay();
         private void HandleMenu() => _navigationService.ToMainMenu();
     }
