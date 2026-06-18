@@ -1,12 +1,16 @@
-﻿namespace ArenaShooter.Infrastructure.Signals
+﻿using UnityEngine;
+
+namespace ArenaShooter.Infrastructure.Signals
 {
     public readonly struct DamageTakenSignal
     {
         public readonly float Amount;
-
-        public DamageTakenSignal(float amount)
+        public readonly Vector3 OriginPosition;
+        
+        public DamageTakenSignal(float amount, Vector3 originPosition)
         {
             Amount = amount;
+            OriginPosition = originPosition;
         }
     }
 }

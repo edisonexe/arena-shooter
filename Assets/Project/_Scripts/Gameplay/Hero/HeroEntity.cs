@@ -1,5 +1,6 @@
 ﻿using System;
 using ArenaShooter.Gameplay.Combat;
+using UnityEngine;
 
 namespace ArenaShooter.Gameplay.Hero
 {
@@ -18,9 +19,9 @@ namespace ArenaShooter.Gameplay.Hero
             _healthSystem = healthSystem ?? throw new ArgumentNullException(nameof(healthSystem));
         }
 
-        public void TakeDamage(float amount)
+        public void TakeDamage(float amount, Vector3 damageSourcePosition)
         {
-            _healthSystem.TakeDamage(amount);
+            _healthSystem.TakeDamage(amount, damageSourcePosition);
         }
     }
 }

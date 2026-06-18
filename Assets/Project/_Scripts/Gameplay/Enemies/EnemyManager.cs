@@ -56,12 +56,11 @@ namespace ArenaShooter.Gameplay.Enemies
                     float sqrDistanceToHero = (enemy.transform.position - heroPosition).sqrMagnitude;
                     if (sqrDistanceToHero <= AttackRadiusSqr)
                     {
-                        _signalBus.Fire(new DamageTakenSignal(enemy.Config.Damage));
+                        _signalBus.Fire(new DamageTakenSignal(enemy.Config.Damage, enemy.transform.position));
                     }
                 }
             }
         }
-
         
         public void AddEnemy(Enemy enemy)
         {

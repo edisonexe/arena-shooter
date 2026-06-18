@@ -5,13 +5,14 @@ using UnityEngine;
 
 namespace ArenaShooter.Gameplay.Enemies
 {
-    [RequireComponent(typeof(Collider), typeof(DamageVisualTilt))]
+    [RequireComponent(typeof(Collider), typeof(DamageVisualTilt), typeof(HitFlashVisual))]
     public class Enemy : MonoBehaviour, IPoolable<Enemy>, IDamageable
     {
         [SerializeField] private EnemyConfig _config;
         [SerializeField] private MeshRenderer _meshRenderer;
         [SerializeField] private Collider _collider;
         [SerializeField] private DamageVisualTilt _visualTilt;
+        [SerializeField] private HitFlashVisual _hitFlash;
         
         private float _currentHealth;
         
@@ -22,6 +23,8 @@ namespace ArenaShooter.Gameplay.Enemies
         {
             transform.position = position;
             _currentHealth = _config.MaxHealth;
+            
+            if (_hitFlash) _hitFlash.Initialize();
         }
         
         public void Spawn()
@@ -40,23 +43,33 @@ namespace ArenaShooter.Gameplay.Enemies
             _collider.enabled = false;
         }
 
-        public void TakeDamage(float amount)
+        public void TakeDamage(float amount, Vector3 damageSourcePosition)
         {
             if (!IsActive) return;
 
             _currentHealth -= amount;
 
-            _visualTilt.ApplyStrictBackwardTilt(transform.forward);
-            
-            if (_currentHealth <= 0f)
+            if (_visualTilt)
             {
-                Despawn();
-            }
+                Vector3 hitDirection = (transform.position - damageSourcePosition);
+                hitDirection.y = 0f;
+                
+                if (hitDirection.sqrMagnitude > 0.001f)
+                {
+                    _visualTilt.ApplyDirectionalTilt(hitDirection.normalized);
+                }
+            };
+            
+            if (_hitFlash) _hitFlash.PlayFlash(0.12f);
+            
+            if (_currentHealth <= 0f) Despawn();
         }
         
         public void TickUpdate(Vector3 targetPosition, float deltaTime)
         {
             _visualTilt.TickTilt(deltaTime);
+            
+            if (_hitFlash) _hitFlash.TickFlash(deltaTime);
             
             Vector3 currentPosition = transform.position;
             Vector3 direction = targetPosition - currentPosition;
@@ -83,6 +96,8 @@ namespace ArenaShooter.Gameplay.Enemies
             
             if (!(_visualTilt ??= GetComponent<DamageVisualTilt>())) 
                 Debug.LogError($"[Enemy] DamageVisualTilt is missing on '{name}'!", this);
+            
+            if (!(_hitFlash ??= GetComponent<HitFlashVisual>())) Debug.LogError($"[Enemy] HitFlashVisual is missing!", this);
         }
     }
 }

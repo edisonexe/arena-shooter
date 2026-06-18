@@ -1,6 +1,7 @@
 ﻿using System;
 using ArenaShooter.Infrastructure.Signals;
 using ArenaShooter.Services.Progression;
+using UnityEngine;
 using Zenject;
 
 namespace ArenaShooter.Gameplay.Hero
@@ -39,7 +40,7 @@ namespace ArenaShooter.Gameplay.Hero
             _signalBus.Unsubscribe(_onDamageSignalCache);
         }
 
-        public void TakeDamage(float amount)
+        public void TakeDamage(float amount, Vector3 damageSourcePosition)
         {
             if (_runtimeStats.CurrentHealth <= 0f) return;
 
@@ -47,7 +48,13 @@ namespace ArenaShooter.Gameplay.Hero
 
             if (_view.VisualTilt)
             {
-                _view.VisualTilt.ApplyStrictBackwardTilt(_view.transform.forward);
+                Vector3 hitDirection = (_view.Rigidbody.position - damageSourcePosition);
+                hitDirection.y = 0f;
+
+                if (hitDirection.sqrMagnitude > 0.001f)
+                {
+                    _view.VisualTilt.ApplyDirectionalTilt(hitDirection.normalized);
+                }
             }
             
             float normalizedHealth = _runtimeStats.MaxHealth > 0f ? _runtimeStats.CurrentHealth / _runtimeStats.MaxHealth : 0f;
@@ -67,7 +74,7 @@ namespace ArenaShooter.Gameplay.Hero
         
         private void OnDamageSignalReceived(DamageTakenSignal signal)
         {
-            TakeDamage(signal.Amount);
+            TakeDamage(signal.Amount, signal.OriginPosition);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace ArenaShooter.Services.Combat
 
             if (closestEnemy)
             {
-                closestEnemy.TakeDamage(damage);
+                closestEnemy.TakeDamage(damage, bulletPosition);
                 return true;
             }
 

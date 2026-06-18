@@ -9,19 +9,17 @@ namespace ArenaShooter.Gameplay.Combat
         private float _tiltAngle;
         private Vector3 _worldTiltAxis;
         
-        private const float SpringStiffness = 130f; 
-        private const float SpringDamping = 24f;    
+        private const float SPRING_STIFFNESS = 130f; 
+        private const float SPRING_DAMPING = 24f;    
         private float _springVelocity;
         
-        public void ApplyStrictBackwardTilt(Vector3 lookAtTargetDirection)
+        public void ApplyDirectionalTilt(Vector3 hitDirection)
         {
             if (!_visualRoot) return;
-
-            Vector3 forwardDirection = new Vector3(lookAtTargetDirection.x, 0f, lookAtTargetDirection.z).normalized;
             
-            _worldTiltAxis = Vector3.Cross(Vector3.up, forwardDirection).normalized;
-
-            _tiltAngle = -18f; 
+            _worldTiltAxis = Vector3.Cross(Vector3.up, hitDirection).normalized;
+            
+            _tiltAngle = 18f; 
             _springVelocity = 0f;
         }
 
@@ -30,15 +28,16 @@ namespace ArenaShooter.Gameplay.Combat
             if (!_visualRoot) return;
             if (Mathf.Abs(_tiltAngle) < 0.05f && Mathf.Abs(_springVelocity) < 0.05f)
             {
-                _visualRoot.localRotation = Quaternion.identity;
+                _tiltAngle = 0f;
+                _springVelocity = 0f;
                 return;
             }
 
-            float springForce = -SpringStiffness * _tiltAngle;
-            _springVelocity += (springForce - SpringDamping * _springVelocity) * deltaTime;
+            float springForce = -SPRING_STIFFNESS * _tiltAngle;
+            _springVelocity += (springForce - SPRING_DAMPING * _springVelocity) * deltaTime;
             _tiltAngle += _springVelocity * deltaTime;
             
-            if (_tiltAngle > 0f)
+            if (_tiltAngle < 0f)
             {
                 _tiltAngle = 0f;
                 _springVelocity = 0f;
