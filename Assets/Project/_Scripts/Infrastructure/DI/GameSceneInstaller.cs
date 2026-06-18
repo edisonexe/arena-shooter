@@ -132,6 +132,12 @@ namespace ArenaShooter.Infrastructure.DI
             
             Container.Bind<HeroMover>().AsSingle();
             Container.Bind<AutoCombatWeapon>().AsSingle();
+            
+            Container.BindInterfacesAndSelfTo<HeroMovementSystem>().AsSingle();
+            Container.BindInterfacesAndSelfTo<HeroRotationSystem>().AsSingle();
+            Container.BindInterfacesAndSelfTo<HeroCombatSystem>().AsSingle();
+            Container.BindInterfacesAndSelfTo<HeroHealthSystem>().AsSingle();
+            
             Container.BindInterfacesAndSelfTo<HeroEntity>().AsSingle().NonLazy();
         }
 

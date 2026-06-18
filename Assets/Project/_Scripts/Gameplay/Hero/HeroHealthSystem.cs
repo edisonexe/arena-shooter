@@ -1,0 +1,73 @@
+﻿using System;
+using ArenaShooter.Infrastructure.Signals;
+using ArenaShooter.Services.Progression;
+using Zenject;
+
+namespace ArenaShooter.Gameplay.Hero
+{
+    public class HeroHealthSystem : IInitializable, IDisposable
+    {
+        private readonly HeroView _view;
+        private readonly SignalBus _signalBus;
+        private readonly HeroRuntimeStats _runtimeStats;
+        private readonly HeroStatsModifierService _modifierService;
+
+        private Action<DamageTakenSignal> _onDamageSignalCache;
+        
+        public event Action<float> OnHealthChanged;
+
+        public HeroHealthSystem(
+            HeroView view, 
+            SignalBus signalBus, 
+            HeroRuntimeStats runtimeStats, 
+            HeroStatsModifierService modifierService)
+        {
+            _view = view ?? throw new ArgumentNullException(nameof(view));
+            _signalBus = signalBus ?? throw new ArgumentNullException(nameof(signalBus));
+            _runtimeStats = runtimeStats ?? throw new ArgumentNullException(nameof(runtimeStats));
+            _modifierService = modifierService ?? throw new ArgumentNullException(nameof(modifierService));
+        }
+
+        public void Initialize()
+        {
+            _onDamageSignalCache = OnDamageSignalReceived;
+            _signalBus.Subscribe(_onDamageSignalCache);
+        }
+
+        public void Dispose()
+        {
+            _signalBus.Unsubscribe(_onDamageSignalCache);
+        }
+
+        public void TakeDamage(float amount)
+        {
+            if (_runtimeStats.CurrentHealth <= 0f) return;
+
+            _modifierService.ApplyDamage(amount);
+
+            if (_view.VisualTilt)
+            {
+                _view.VisualTilt.ApplyStrictBackwardTilt(_view.transform.forward);
+            }
+            
+            float normalizedHealth = _runtimeStats.MaxHealth > 0f ? _runtimeStats.CurrentHealth / _runtimeStats.MaxHealth : 0f;
+            OnHealthChanged?.Invoke(normalizedHealth);
+
+            if (_runtimeStats.CurrentHealth <= 0f)
+            {
+                Die();
+            }
+        }
+
+        private void Die()
+        {
+            _signalBus.Fire(new PlayerDiedSignal());
+            _view.gameObject.SetActive(false);
+        }
+        
+        private void OnDamageSignalReceived(DamageTakenSignal signal)
+        {
+            TakeDamage(signal.Amount);
+        }
+    }
+}
