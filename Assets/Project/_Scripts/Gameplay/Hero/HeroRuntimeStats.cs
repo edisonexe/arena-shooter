@@ -14,7 +14,11 @@ namespace ArenaShooter.Gameplay.Hero
         
         public float MaxHealth { get; private set; }
         public float CurrentHealth { get; private set; }
-
+        public float HealthRegen { get; private set; } 
+        
+        public float PickupRadius { get; private set; }
+        
+        
         public HeroRuntimeStats(HeroConfig heroConfig, WeaponConfig weaponConfig)
         {
             _heroConfig = heroConfig ?? throw new ArgumentNullException(nameof(heroConfig));
@@ -28,15 +32,22 @@ namespace ArenaShooter.Gameplay.Hero
             MoveSpeed = _heroConfig.MoveSpeed;
             MaxHealth = _heroConfig.MaxHealth;
             CurrentHealth = MaxHealth;
-
+            HealthRegen = _heroConfig.BaseHealthRegen;
+            
             BulletDamage = _weaponConfig.Damage;
             WeaponCooldown = _weaponConfig.FireCooldown;
+            
+            PickupRadius = _heroConfig.BasePickupRadius;
         }
         
         public void SetCurrentHealth(float health) => CurrentHealth = health;
         public void SetMaxHealth(float health) => MaxHealth = health;
+        public void SetHealthRegen(float regen) => HealthRegen = regen;
+        
         public void SetMoveSpeed(float moveSpeed) => MoveSpeed = moveSpeed;
         public void SetBulletDamage(float damage) => BulletDamage = damage;
         public void SetWeaponCooldown(float cooldown) => WeaponCooldown = cooldown;
+        
+        public void SetPickupRadius(float radius) => PickupRadius = radius;
     }
 }

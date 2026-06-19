@@ -10,6 +10,7 @@ using ArenaShooter.Infrastructure.Reset;
 using ArenaShooter.Services.Combat;
 using ArenaShooter.Services.Gameplay;
 using ArenaShooter.Services.Progression;
+using ArenaShooter.Services.Progression.StatsCalculation;
 using ArenaShooter.UI.GameOver;
 using ArenaShooter.UI.HUD;
 using ArenaShooter.UI.Upgrades;
@@ -87,9 +88,19 @@ namespace ArenaShooter.Infrastructure.DI
             Container.BindInstance(_arenaBoundsService).AsSingle();
             
             Container.Bind<SpatialCollisionService>().AsSingle();
+            
+            Container.Bind<IStatCalculation>().To<MoveSpeedCalculation>().AsSingle();
+            Container.Bind<IStatCalculation>().To<DamageCalculation>().AsSingle();
+            Container.Bind<IStatCalculation>().To<FireRateCalculation>().AsSingle();
+            Container.Bind<IStatCalculation>().To<MaxHealthCalculation>().AsSingle();
+            Container.Bind<IStatCalculation>().To<RegenHealthCalculation>().AsSingle();
+            Container.Bind<IStatCalculation>().To<PickupRadiusCalculation>().AsSingle();
+            
             Container.Bind<HeroStatsModifierService>().AsSingle();
             
             Container.BindInterfacesAndSelfTo<LevelingService>().AsSingle();
+            
+            Container.BindInterfacesAndSelfTo<HeroRegenSystem>().AsSingle().NonLazy();
         }
 
         private void InstallPools()

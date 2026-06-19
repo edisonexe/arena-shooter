@@ -4,6 +4,9 @@
     {
         MoveSpeedBoost,
         DamageBoost,
-        FireRateBoost
+        FireRateBoost,
+        MaxHealthBoost,
+        HealthRegenBoost,
+        PickupRadiusBoost
     }
 }
