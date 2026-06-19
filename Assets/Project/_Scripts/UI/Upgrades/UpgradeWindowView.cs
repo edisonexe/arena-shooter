@@ -8,11 +8,14 @@ namespace ArenaShooter.UI.Upgrades
     public class UpgradeWindowView : MonoBehaviour, IUpgradeWindowView
     {
         [SerializeField] private UpgradeCardView[] _cards;
-
+        [SerializeField] private GameObject _contentRoot;
+        
         private void OnValidate()
         {
             if (_cards == null || _cards.Length == 0) 
                 Debug.LogError("[UpgradeWindowView] No cards have been set.", this);
+            
+            if (!_contentRoot) Debug.LogError("[UpgradeWindowView] Content Root is not assigned!", this);
         }
 
         public void Initialize(Action<UpgradeConfig> onUpgradeSelected)
@@ -25,7 +28,7 @@ namespace ArenaShooter.UI.Upgrades
 
         public void Show(List<UpgradeConfig> availableUpgrades)
         {
-            gameObject.SetActive(true);
+            _contentRoot.SetActive(true);
 
             int upgradesCount = availableUpgrades.Count;
 
@@ -43,9 +46,6 @@ namespace ArenaShooter.UI.Upgrades
             }
         }
 
-        public void Hide()
-        {
-            gameObject.SetActive(false);
-        }
+        public void Hide() => _contentRoot.SetActive(false);
     }
 }
