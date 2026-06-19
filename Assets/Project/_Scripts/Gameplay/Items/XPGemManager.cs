@@ -16,24 +16,26 @@ namespace ArenaShooter.Gameplay.Items
         private readonly HeroView _heroView;
         private readonly LevelingService _levelingService;
         private readonly SignalBus _signalBus;
+        private readonly HeroRuntimeStats _runtimeStats;
 
         private readonly List<XPGem> _activeGems = new(256);
         private Action<EnemyKilledSignal> _onEnemyKilledCache;
-
-        private const float MagnetRadiusSqr = 4.0f * 4.0f;
-        private const float CollectionRadiusSqr = 0.6f * 0.6f;
-        private const float MagnetSpeed = 10f;
+        
+        private const float COL_RAD_SQR = 0.6f * 0.6f;
+        private const float MAGNET_SP = 10f;
 
         public XPGemManager(
             ObjectPool<XPGem> gemPool, 
             HeroView heroView, 
             LevelingService levelingService, 
-            SignalBus signalBus)
+            SignalBus signalBus,
+            HeroRuntimeStats runtimeStats)
         {
             _gemPool = gemPool ?? throw new ArgumentNullException(nameof(gemPool));
             _heroView = heroView ?? throw new ArgumentNullException(nameof(heroView));
             _levelingService = levelingService ?? throw new ArgumentNullException(nameof(levelingService));
             _signalBus = signalBus ?? throw new ArgumentNullException(nameof(signalBus));
+            _runtimeStats = runtimeStats ?? throw new ArgumentNullException(nameof(runtimeStats));
             
             _onEnemyKilledCache = HandleEnemyKilled;
         }
@@ -55,6 +57,9 @@ namespace ArenaShooter.Gameplay.Items
             Vector3 heroPosition = _heroView.transform.position;
             float deltaTime = Time.deltaTime;
 
+            float currentMagnetRadius = _runtimeStats.PickupRadius;
+            float dynamicMagnetRadiusSqr = currentMagnetRadius * currentMagnetRadius;
+            
             for (var i = _activeGems.Count - 1; i >= 0; i--)
             {
                 XPGem gem = _activeGems[i];
@@ -72,7 +77,7 @@ namespace ArenaShooter.Gameplay.Items
                 
                 float sqrDistance = (heroPosition - gemPosition).sqrMagnitude;
 
-                if (sqrDistance <= CollectionRadiusSqr)
+                if (sqrDistance <= COL_RAD_SQR)
                 {
                     _levelingService.AddXp(gem.XpValue); 
                     
@@ -81,9 +86,9 @@ namespace ArenaShooter.Gameplay.Items
                     continue;
                 }
 
-                if (sqrDistance <= MagnetRadiusSqr)
+                if (sqrDistance <= dynamicMagnetRadiusSqr)
                 {
-                    gem.transform.position = Vector3.MoveTowards(gemPosition, heroPosition, MagnetSpeed * deltaTime);
+                    gem.transform.position = Vector3.MoveTowards(gemPosition, heroPosition, MAGNET_SP * deltaTime);
                 }
             }
         }
