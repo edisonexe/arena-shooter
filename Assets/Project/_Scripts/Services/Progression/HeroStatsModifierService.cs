@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ArenaShooter.Configs;
 using ArenaShooter.Configs.Upgrades;
 using ArenaShooter.Gameplay.Hero;
+using ArenaShooter.Services.Progression.StatsCalculation;
 using UnityEngine;
 
 namespace ArenaShooter.Services.Progression
@@ -14,12 +15,25 @@ namespace ArenaShooter.Services.Progression
         private readonly HeroRuntimeStats _runtimeStats;
 
         private readonly Dictionary<UpgradeType, float> _modifiers = new (8);
+        private readonly Dictionary<UpgradeType, IStatCalculation> _upgrades = new (8);
+        
+        public event Action OnModifiersApplied;
 
-        public HeroStatsModifierService(HeroConfig heroConfig, WeaponConfig weaponConfig, HeroRuntimeStats runtimeStats)
+        public HeroStatsModifierService(
+            HeroConfig heroConfig, 
+            WeaponConfig weaponConfig, 
+            HeroRuntimeStats runtimeStats,
+            List<IStatCalculation> upgrades)
         {
             _heroConfig = heroConfig ?? throw new ArgumentNullException(nameof(heroConfig));
             _weaponConfig = weaponConfig ?? throw new ArgumentNullException(nameof(weaponConfig));
             _runtimeStats = runtimeStats ?? throw new ArgumentNullException(nameof(runtimeStats));
+            if (upgrades == null) throw new ArgumentNullException(nameof(upgrades));
+
+            for (var i = 0; i < upgrades.Count; i++)
+            {
+                _upgrades[upgrades[i].TargetUpgradeType] = upgrades[i];
+            }
             
             ResetModifiersToDefault();
         }
@@ -28,8 +42,6 @@ namespace ArenaShooter.Services.Progression
         {
             _modifiers[upgrade.Type] += upgrade.Value;
             RecalculateAndApply();
-            
-            Debug.LogWarning($"[Stats] Applied {upgrade.Title}. New modifier for {upgrade.Type}: {_modifiers[upgrade.Type]}");
         }
 
         public void ApplyDamage(float damageAmount)
@@ -46,17 +58,23 @@ namespace ArenaShooter.Services.Progression
             }
 
             _runtimeStats.ResetToConfigs();
+            RecalculateAndApply();
         }
         
         private void RecalculateAndApply()
         {
-            float finalSpeed = _heroConfig.MoveSpeed * _modifiers[UpgradeType.MoveSpeedBoost];
-            float finalDamage = _weaponConfig.Damage * _modifiers[UpgradeType.DamageBoost];
-            float finalCooldown = _weaponConfig.FireCooldown / _modifiers[UpgradeType.FireRateBoost];
+            var context = new StatCalculationContext(_heroConfig, _weaponConfig, _runtimeStats);
+
+            foreach (var kvp in _modifiers)
+            {
+                if (_upgrades.TryGetValue(kvp.Key, out var statCalculation))
+                {
+                    statCalculation.CalculateAndApply(in context, kvp.Value);
+                }
+            }
             
-            _runtimeStats.SetMoveSpeed(finalSpeed);
-            _runtimeStats.SetBulletDamage(finalDamage);
-            _runtimeStats.SetWeaponCooldown(finalCooldown);
+            
+            OnModifiersApplied?.Invoke();
         }
     }
 }

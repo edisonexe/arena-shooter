@@ -14,6 +14,7 @@ namespace ArenaShooter.Gameplay.Hero
         private readonly HeroStatsModifierService _modifierService;
 
         private Action<DamageTakenSignal> _onDamageSignalCache;
+        private Action _onModifiersAppliedCache;
         
         public event Action<float> OnHealthChanged;
 
@@ -33,6 +34,9 @@ namespace ArenaShooter.Gameplay.Hero
         {
             _onDamageSignalCache = OnDamageSignalReceived;
             _signalBus.Subscribe(_onDamageSignalCache);
+            
+            _onModifiersAppliedCache = ForceUpdateHealthVisual;
+            _modifierService.OnModifiersApplied += _onModifiersAppliedCache;
         }
 
         public void Dispose()
@@ -57,8 +61,7 @@ namespace ArenaShooter.Gameplay.Hero
                 }
             }
             
-            float normalizedHealth = _runtimeStats.MaxHealth > 0f ? _runtimeStats.CurrentHealth / _runtimeStats.MaxHealth : 0f;
-            OnHealthChanged?.Invoke(normalizedHealth);
+            ForceUpdateHealthVisual();
 
             if (_runtimeStats.CurrentHealth <= 0f)
             {
@@ -70,6 +73,12 @@ namespace ArenaShooter.Gameplay.Hero
         {
             _runtimeStats.SetCurrentHealth(_runtimeStats.MaxHealth);
             OnHealthChanged?.Invoke(1f);
+        }
+        
+        public void ForceUpdateHealthVisual()
+        {
+            float normalizedHealth = _runtimeStats.MaxHealth > 0f ? _runtimeStats.CurrentHealth / _runtimeStats.MaxHealth : 0f;
+            OnHealthChanged?.Invoke(normalizedHealth);
         }
         
         private void Die()
