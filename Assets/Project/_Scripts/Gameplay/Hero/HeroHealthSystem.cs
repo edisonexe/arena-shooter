@@ -1,33 +1,30 @@
 ﻿using System;
+using ArenaShooter.Gameplay.Combat;
 using ArenaShooter.Infrastructure.Signals;
-using ArenaShooter.Services.Progression;
 using UnityEngine;
 using Zenject;
 
 namespace ArenaShooter.Gameplay.Hero
 {
-    public class HeroHealthSystem : IInitializable, IDisposable
+    public class HeroHealthSystem : IInitializable, IDisposable, IDamageable
     {
         private readonly HeroView _view;
         private readonly SignalBus _signalBus;
         private readonly HeroRuntimeStats _runtimeStats;
-        private readonly HeroStatsModifierService _modifierService;
 
         private Action<DamageTakenSignal> _onDamageSignalCache;
-        private Action _onModifiersAppliedCache;
+        private Action<float, float> _onHealthStatsChangedCache;
         
-        public event Action<float> OnHealthChanged;
+        public event Action<float, float> OnHealthChanged;
 
         public HeroHealthSystem(
             HeroView view, 
             SignalBus signalBus, 
-            HeroRuntimeStats runtimeStats, 
-            HeroStatsModifierService modifierService)
+            HeroRuntimeStats runtimeStats)
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));
             _signalBus = signalBus ?? throw new ArgumentNullException(nameof(signalBus));
             _runtimeStats = runtimeStats ?? throw new ArgumentNullException(nameof(runtimeStats));
-            _modifierService = modifierService ?? throw new ArgumentNullException(nameof(modifierService));
         }
 
         public void Initialize()
@@ -35,21 +32,23 @@ namespace ArenaShooter.Gameplay.Hero
             _onDamageSignalCache = OnDamageSignalReceived;
             _signalBus.Subscribe(_onDamageSignalCache);
             
-            _onModifiersAppliedCache = ForceUpdateHealthVisual;
-            _modifierService.OnModifiersApplied += _onModifiersAppliedCache;
+
+            _onHealthStatsChangedCache = HandleHealthStatsChanged;
+            _runtimeStats.OnHealthStatsChanged += _onHealthStatsChangedCache;
         }
 
         public void Dispose()
         {
             _signalBus.Unsubscribe(_onDamageSignalCache);
-            _modifierService.OnModifiersApplied -= _onModifiersAppliedCache;
+            _runtimeStats.OnHealthStatsChanged -= _onHealthStatsChangedCache;
         }
 
         public void TakeDamage(float amount, Vector3 damageSourcePosition)
         {
             if (_runtimeStats.CurrentHealth <= 0f) return;
 
-            _modifierService.ApplyDamage(amount);
+            float newHealth = Mathf.Max(_runtimeStats.CurrentHealth - amount, 0f);
+            _runtimeStats.SetCurrentHealth(newHealth);
 
             if (_view.VisualTilt)
             {
@@ -61,8 +60,6 @@ namespace ArenaShooter.Gameplay.Hero
                     _view.VisualTilt.ApplyDirectionalTilt(hitDirection.normalized);
                 }
             }
-            
-            ForceUpdateHealthVisual();
 
             if (_runtimeStats.CurrentHealth <= 0f)
             {
@@ -73,13 +70,11 @@ namespace ArenaShooter.Gameplay.Hero
         public void ResetHealth()
         {
             _runtimeStats.SetCurrentHealth(_runtimeStats.MaxHealth);
-            OnHealthChanged?.Invoke(1f);
         }
-        
-        public void ForceUpdateHealthVisual()
+
+        private void HandleHealthStatsChanged(float currentHealth, float maxHealth)
         {
-            float normalizedHealth = _runtimeStats.MaxHealth > 0f ? _runtimeStats.CurrentHealth / _runtimeStats.MaxHealth : 0f;
-            OnHealthChanged?.Invoke(normalizedHealth);
+            OnHealthChanged?.Invoke(currentHealth, maxHealth);
         }
         
         private void Die()

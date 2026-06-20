@@ -24,8 +24,6 @@ namespace ArenaShooter.Gameplay.Hero
             float addedHealth = _runtimeStats.HealthRegen * Time.deltaTime;
             float newHealth = Mathf.Min(_runtimeStats.CurrentHealth + addedHealth, _runtimeStats.MaxHealth);
             _runtimeStats.SetCurrentHealth(newHealth);
-            
-            _healthSystem.ForceUpdateHealthVisual();
         }
     }
 }

@@ -1,0 +1,11 @@
+﻿using ArenaShooter.Configs.Upgrades;
+using ArenaShooter.Gameplay.Hero;
+
+namespace ArenaShooter.Services.Progression.UpgradesCalculation
+{
+    public interface IUpgradeCalculation
+    {
+        UpgradeType TargetUpgradeType { get; }
+        void Apply(HeroRuntimeStats stats, float addFactor);
+    }
+}

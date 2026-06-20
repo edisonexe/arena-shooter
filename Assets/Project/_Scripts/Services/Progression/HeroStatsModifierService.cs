@@ -1,80 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
-using ArenaShooter.Configs;
 using ArenaShooter.Configs.Upgrades;
 using ArenaShooter.Gameplay.Hero;
-using ArenaShooter.Services.Progression.StatsCalculation;
-using UnityEngine;
+using ArenaShooter.Services.Progression.UpgradesCalculation;
 
 namespace ArenaShooter.Services.Progression
 {
     public class HeroStatsModifierService
     {
-        private readonly HeroConfig _heroConfig;
-        private readonly WeaponConfig _weaponConfig;
         private readonly HeroRuntimeStats _runtimeStats;
-
-        private readonly Dictionary<UpgradeType, float> _modifiers = new (8);
-        private readonly Dictionary<UpgradeType, IStatCalculation> _upgrades = new (8);
         
-        public event Action OnModifiersApplied;
-
+        private readonly Dictionary<UpgradeType, IUpgradeCalculation> _upgrades = new (8);
+        
         public HeroStatsModifierService(
-            HeroConfig heroConfig, 
-            WeaponConfig weaponConfig, 
             HeroRuntimeStats runtimeStats,
-            List<IStatCalculation> upgrades)
+            List<IUpgradeCalculation> calculations)
         {
-            _heroConfig = heroConfig ?? throw new ArgumentNullException(nameof(heroConfig));
-            _weaponConfig = weaponConfig ?? throw new ArgumentNullException(nameof(weaponConfig));
             _runtimeStats = runtimeStats ?? throw new ArgumentNullException(nameof(runtimeStats));
-            if (upgrades == null) throw new ArgumentNullException(nameof(upgrades));
-
-            for (var i = 0; i < upgrades.Count; i++)
+            if (calculations == null) throw new ArgumentNullException(nameof(calculations));
+            
+            for (int i = 0; i < calculations.Count; i++)
             {
-                _upgrades[upgrades[i].TargetUpgradeType] = upgrades[i];
+                _upgrades[calculations[i].TargetUpgradeType] = calculations[i];
             }
             
             ResetModifiersToDefault();
         }
-
+        
         public void ApplyUpgrade(UpgradeConfig upgrade)
         {
-            _modifiers[upgrade.Type] += upgrade.Value;
-            RecalculateAndApply();
-        }
-
-        public void ApplyDamage(float damageAmount)
-        {
-            float newHealth = Mathf.Max(_runtimeStats.CurrentHealth - damageAmount, 0f);
-            _runtimeStats.SetCurrentHealth(newHealth);
+            if (upgrade == null) return;
+            
+            if (_upgrades.TryGetValue(upgrade.Type, out var strategy))
+            {
+                strategy.Apply(_runtimeStats, upgrade.AddFactor);
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException(nameof(upgrade.Type));
+            }
         }
         
-        public void ResetModifiersToDefault()
-        {
-            foreach (UpgradeType type in Enum.GetValues(typeof(UpgradeType)))
-            {
-                _modifiers[type] = 1.0f;
-            }
-
-            _runtimeStats.ResetToConfigs();
-            RecalculateAndApply();
-        }
-        
-        private void RecalculateAndApply()
-        {
-            var context = new StatCalculationContext(_heroConfig, _weaponConfig, _runtimeStats);
-
-            foreach (var kvp in _modifiers)
-            {
-                if (_upgrades.TryGetValue(kvp.Key, out var statCalculation))
-                {
-                    statCalculation.CalculateAndApply(in context, kvp.Value);
-                }
-            }
-            
-            
-            OnModifiersApplied?.Invoke();
-        }
+        public void ResetModifiersToDefault() => _runtimeStats.ResetToConfigs();
     }
 }

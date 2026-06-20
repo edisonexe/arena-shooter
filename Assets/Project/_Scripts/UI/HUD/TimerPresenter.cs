@@ -1,5 +1,4 @@
 ﻿using System;
-using ArenaShooter.Gameplay.Enemies;
 using ArenaShooter.Infrastructure.Reset;
 using ArenaShooter.Services.Gameplay;
 using UnityEngine;

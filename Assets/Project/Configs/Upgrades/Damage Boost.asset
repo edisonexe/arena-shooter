@@ -16,4 +16,4 @@ MonoBehaviour:
   _description: +15% damage
   _icon: {fileID: 21300000, guid: c0f814166c3479e4fafff6dcb706233d, type: 3}
   _type: 1
-  _value: 0.15
+  _addPercent: 15

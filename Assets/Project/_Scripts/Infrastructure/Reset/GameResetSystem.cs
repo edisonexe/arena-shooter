@@ -31,8 +31,6 @@ namespace ArenaShooter.Infrastructure.Reset
         {
             _gameOverPresenter.OnRestartRequested += ResetGame;
             _gameVictoryPresenter.OnRestartRequested += ResetGame;
-            
-            ResetAllSystemsOnly();
         }
         
         public void Dispose()

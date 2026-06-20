@@ -1,5 +1,6 @@
 ﻿using System;
 using ArenaShooter.Configs;
+using UnityEngine;
 
 namespace ArenaShooter.Gameplay.Hero
 {
@@ -18,6 +19,7 @@ namespace ArenaShooter.Gameplay.Hero
         
         public float PickupRadius { get; private set; }
         
+        public event Action<float, float> OnHealthStatsChanged;
         
         public HeroRuntimeStats(HeroConfig heroConfig, WeaponConfig weaponConfig)
         {
@@ -38,16 +40,45 @@ namespace ArenaShooter.Gameplay.Hero
             WeaponCooldown = _weaponConfig.FireCooldown;
             
             PickupRadius = _heroConfig.BasePickupRadius;
+            
+            OnHealthStatsChanged?.Invoke(CurrentHealth, MaxHealth);
         }
         
-        public void SetCurrentHealth(float health) => CurrentHealth = health;
-        public void SetMaxHealth(float health) => MaxHealth = health;
-        public void SetHealthRegen(float regen) => HealthRegen = regen;
-        
-        public void SetMoveSpeed(float moveSpeed) => MoveSpeed = moveSpeed;
-        public void SetBulletDamage(float damage) => BulletDamage = damage;
-        public void SetWeaponCooldown(float cooldown) => WeaponCooldown = cooldown;
-        
-        public void SetPickupRadius(float radius) => PickupRadius = radius;
+        public void SetCurrentHealth(float health)
+        {
+            CurrentHealth = health;
+            OnHealthStatsChanged?.Invoke(CurrentHealth, MaxHealth);
+        }
+
+        public void SetMaxHealth(float health)
+        {
+            MaxHealth = health;
+            OnHealthStatsChanged?.Invoke(CurrentHealth, MaxHealth);
+        }
+
+        public void SetHealthRegen(float regen)
+        {
+            HealthRegen = regen;
+        }
+
+        public void SetMoveSpeed(float moveSpeed)
+        {
+            MoveSpeed = moveSpeed;
+        }
+
+        public void SetBulletDamage(float damage)
+        {
+            BulletDamage = damage;
+        }
+
+        public void SetWeaponCooldown(float cooldown)
+        {
+            WeaponCooldown = cooldown;
+        }
+
+        public void SetPickupRadius(float radius)
+        {
+            PickupRadius = radius;
+        }
     }
 }

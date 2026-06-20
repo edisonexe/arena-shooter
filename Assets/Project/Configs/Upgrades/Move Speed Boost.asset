@@ -16,4 +16,4 @@ MonoBehaviour:
   _description: +20% move speed
   _icon: {fileID: 21300000, guid: 0585f5822417b494a9c55f4e41d466bd, type: 3}
   _type: 0
-  _value: 0.2
+  _addPercent: 20

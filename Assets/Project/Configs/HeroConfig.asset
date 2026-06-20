@@ -15,4 +15,4 @@ MonoBehaviour:
   _moveSpeed: 5
   _maxHealth: 50
   _baseHealthRegen: 0
-  _basePickupRadius: 3
+  _basePickupRadius: 10

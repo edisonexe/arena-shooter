@@ -16,4 +16,4 @@ MonoBehaviour:
   _description: +10% health
   _icon: {fileID: 21300000, guid: 8950ef2f53e1307408b6e699cefa4079, type: 3}
   _type: 3
-  _value: 0.1
+  _addPercent: 10

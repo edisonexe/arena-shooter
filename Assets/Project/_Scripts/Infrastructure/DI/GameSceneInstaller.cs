@@ -7,12 +7,10 @@ using ArenaShooter.Gameplay.Items;
 using ArenaShooter.Gameplay.Weapons;
 using ArenaShooter.Gameplay.Camera;
 using ArenaShooter.Infrastructure.Reset;
-using ArenaShooter.Infrastructure.StateMachine;
-using ArenaShooter.Infrastructure.StateMachine.States;
 using ArenaShooter.Services.Combat;
 using ArenaShooter.Services.Gameplay;
 using ArenaShooter.Services.Progression;
-using ArenaShooter.Services.Progression.StatsCalculation;
+using ArenaShooter.Services.Progression.UpgradesCalculation;
 using ArenaShooter.UI.GameOver;
 using ArenaShooter.UI.HUD;
 using ArenaShooter.UI.Upgrades;
@@ -90,12 +88,12 @@ namespace ArenaShooter.Infrastructure.DI
             
             Container.Bind<SpatialCollisionService>().AsSingle();
             
-            Container.Bind<IStatCalculation>().To<MoveSpeedCalculation>().AsSingle();
-            Container.Bind<IStatCalculation>().To<DamageCalculation>().AsSingle();
-            Container.Bind<IStatCalculation>().To<FireRateCalculation>().AsSingle();
-            Container.Bind<IStatCalculation>().To<MaxHealthCalculation>().AsSingle();
-            Container.Bind<IStatCalculation>().To<RegenHealthCalculation>().AsSingle();
-            Container.Bind<IStatCalculation>().To<PickupRadiusCalculation>().AsSingle();
+            Container.Bind<IUpgradeCalculation>().To<MoveSpeedCalculation>().AsSingle();
+            Container.Bind<IUpgradeCalculation>().To<DamageCalculation>().AsSingle();
+            Container.Bind<IUpgradeCalculation>().To<FireRateCalculation>().AsSingle();
+            Container.Bind<IUpgradeCalculation>().To<MaxHealthCalculation>().AsSingle();
+            Container.Bind<IUpgradeCalculation>().To<RegenHealthCalculation>().AsSingle();
+            Container.Bind<IUpgradeCalculation>().To<PickupRadiusCalculation>().AsSingle();
             
             Container.Bind<HeroStatsModifierService>().AsSingle();
             
@@ -152,7 +150,7 @@ namespace ArenaShooter.Infrastructure.DI
             Container.Bind<ITickable>().To<HeroRotationSystem>().FromResolve();
             
             Container.BindInterfacesAndSelfTo<HeroCombatSystem>().AsSingle();
-            Container.BindInterfacesAndSelfTo<HeroHealthSystem>().AsSingle();
+            Container.BindInterfacesAndSelfTo<HeroHealthSystem>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<HeroEntity>()
                 .AsSingle()
                 .WithArguments(_heroSpawnPoint)

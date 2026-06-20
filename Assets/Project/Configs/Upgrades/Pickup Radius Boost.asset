@@ -16,4 +16,4 @@ MonoBehaviour:
   _description: +30% pickup radius
   _icon: {fileID: 21300000, guid: b4d9966c1f0415b46bd5351f653ba965, type: 3}
   _type: 5
-  _value: 0.3
+  _addPercent: 30

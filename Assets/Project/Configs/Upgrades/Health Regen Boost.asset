@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Health Regen Boost
   m_EditorClassIdentifier: Assembly-CSharp::ArenaShooter.Configs.Upgrades.UpgradeConfig
   _title: Health Regen Boost
-  _description: +20% health regen
+  _description: +5% health regen
   _icon: {fileID: 21300000, guid: def43b66186bd3848a357bf8ab82ab3a, type: 3}
   _type: 4
-  _value: 0.2
+  _addPercent: 5
