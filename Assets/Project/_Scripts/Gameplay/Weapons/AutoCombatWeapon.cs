@@ -31,11 +31,11 @@ namespace ArenaShooter.Gameplay.Weapons
 
         public void TickWeapon(Vector3 shooterPosition, Transform firePoint, Action<Vector3> onTargetLocked)
         {
-            Enemy target = _enemyManager.GetClosestEnemy(shooterPosition, _weaponConfig.FireRadius);
+            EnemyEntity target = _enemyManager.GetClosestEnemy(shooterPosition, _weaponConfig.FireRadius);
 
-            if (target && target.IsActive)
+            if (target != null && target.IsActive)
             {
-                Vector3 targetPosition = target.transform.position;
+                Vector3 targetPosition = target.View.Transform.position;
                 onTargetLocked?.Invoke(targetPosition);
 
                 _fireTimer += Time.deltaTime;

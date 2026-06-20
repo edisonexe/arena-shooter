@@ -7,6 +7,8 @@ using ArenaShooter.Gameplay.Items;
 using ArenaShooter.Gameplay.Weapons;
 using ArenaShooter.Gameplay.Camera;
 using ArenaShooter.Infrastructure.Reset;
+using ArenaShooter.Infrastructure.StateMachine;
+using ArenaShooter.Infrastructure.StateMachine.States;
 using ArenaShooter.Services.Combat;
 using ArenaShooter.Services.Gameplay;
 using ArenaShooter.Services.Progression;
@@ -35,15 +37,14 @@ namespace ArenaShooter.Infrastructure.DI
         [SerializeField] private Transform _heroSpawnPoint;
         [SerializeField] private Bullet _bulletPrefab;
         [SerializeField] private Transform _bulletsParent;
-        [SerializeField] private Enemy _enemyPrefab;
         [SerializeField] private Transform _enemiesParent;
         [SerializeField] private XPGem _xpGemPrefab;
         [SerializeField] private Transform _xpGemsParent;
         
         [Header("Pool Capacities")] 
         [SerializeField, Min(0)] private int _initialBulletCapacity = 128;
-        [SerializeField, Min(0)] private int _initialEnemyCapacity = 128;
         [SerializeField, Min(0)] private int _initialGemCapacity = 128;
+        [SerializeField, Min(0)] private int _initialEnemiesCapacity = 32;
         
         [Header("UI Views")]
         [SerializeField] private GameplayHUDView _gameplayHUDView;
@@ -108,12 +109,14 @@ namespace ArenaShooter.Infrastructure.DI
             Container.Bind<Pooling.ObjectPool<Bullet>>()
                 .AsSingle()
                 .WithArguments(_bulletPrefab, _bulletsParent, _initialBulletCapacity);
-            Container.Bind<Pooling.ObjectPool<Enemy>>()
-                .AsSingle()
-                .WithArguments(_enemyPrefab, _enemiesParent, _initialEnemyCapacity);
+  
             Container.Bind<Pooling.ObjectPool<XPGem>>()
                 .AsSingle()
                 .WithArguments(_xpGemPrefab, _xpGemsParent, _initialGemCapacity);
+            
+            Container.Bind<EnemyFactory>()
+                .AsSingle()
+                .WithArguments(_enemiesParent, _initialEnemiesCapacity);
         }
         
         private void InstallGameplayManagers()
@@ -187,20 +190,11 @@ namespace ArenaShooter.Infrastructure.DI
             Container.BindInterfacesAndSelfTo<GameVictoryWindowView>().FromInstance(_gameVictoryWindowView).AsSingle();
             Container.BindInterfacesAndSelfTo<GameVictoryPresenter>().AsSingle().NonLazy();
         }
-
+        
         private void InstallResetSystem()
         {
             Container.Bind<IResettable>().To<MatchDurationSystem>().FromResolve();
-            Container.Bind<IResettable>().To<LevelingService>().FromResolve();
-            Container.Bind<IResettable>().To<BulletManager>().FromResolve();
-            Container.Bind<IResettable>().To<EnemyManager>().FromResolve();
-            Container.Bind<IResettable>().To<XPGemManager>().FromResolve();
             Container.Bind<IResettable>().To<HeroEntity>().FromResolve();
-            
-            Container.Bind<IResettable>().To<GameplayHUDPresenter>().FromResolve();
-            Container.Bind<IResettable>().To<WaveHUDPresenter>().FromResolve();
-            Container.Bind<IResettable>().To<GameOverPresenter>().FromResolve();
-            Container.Bind<IResettable>().To<GameVictoryPresenter>().FromResolve();
             
             Container.BindInterfacesAndSelfTo<GameResetSystem>().AsSingle().NonLazy();
         }
@@ -216,7 +210,6 @@ namespace ArenaShooter.Infrastructure.DI
             if (!_heroSpawnPoint) Debug.LogError("[GameSceneInstaller] HeroSpawnPoint is not assigned!", this);
             if (!_bulletPrefab) Debug.LogError("[GameSceneInstaller] BulletPrefab is not assigned!", this);
             if (!_bulletsParent) Debug.LogError("[GameSceneInstaller] BulletsParent is not assigned!", this);
-            if (!_enemyPrefab) Debug.LogError("[GameSceneInstaller] EnemyPrefab is not assigned!", this);
             if (!_enemiesParent) Debug.LogError("[GameSceneInstaller] EnemiesParent is not assigned!", this);
             if (!_gameplayHUDView) Debug.LogError("[GameSceneInstaller] GameplayHUDView is not assigned!", this);
             if (!_upgradeWindowView) Debug.LogError("[GameSceneInstaller] UpgradeWindowView is not assigned!", this);

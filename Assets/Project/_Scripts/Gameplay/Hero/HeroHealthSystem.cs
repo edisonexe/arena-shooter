@@ -42,6 +42,7 @@ namespace ArenaShooter.Gameplay.Hero
         public void Dispose()
         {
             _signalBus.Unsubscribe(_onDamageSignalCache);
+            _modifierService.OnModifiersApplied -= _onModifiersAppliedCache;
         }
 
         public void TakeDamage(float amount, Vector3 damageSourcePosition)

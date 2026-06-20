@@ -1,7 +1,7 @@
 ﻿using System;
 using ArenaShooter.Configs.Enemies;
 using ArenaShooter.Gameplay.Hero;
-using ArenaShooter.Infrastructure.Pooling;
+using ArenaShooter.Infrastructure.Reset;
 using ArenaShooter.Infrastructure.Signals;
 using ArenaShooter.Services.Gameplay;
 using UnityEngine;
@@ -9,31 +9,28 @@ using Zenject;
 
 namespace ArenaShooter.Gameplay.Enemies
 {
-    public class EnemyWaveSpawner : ITickable, IInitializable, IDisposable
+    public class EnemyWaveSpawner : ITickable, IInitializable, IDisposable, IResettable
     {
         private readonly WaveConfig _config;
-        private readonly ObjectPool<Enemy> _enemyPool;
+        private readonly EnemyFactory _enemyFactory;
         private readonly EnemyManager _enemyManager;
         private readonly Transform _heroTransform;
         private readonly SignalBus _signalBus;
         private readonly ArenaBoundsService _arenaBoundsService;
         private readonly MatchDurationSystem _durationSystem;
         
-        private int _currentWave = 1;
-        
+        private int _currentWaveIndex = 0;
         private float _spawnCooldownTimer;
-        private float _currentSpawnInterval;
         private bool _isSpawningActive = true;
 
         private const float SPAWN_RAD = 20f;
-        
         private Action<PlayerDiedSignal> _onPlayerDiedCache;
         
         public event Action<int> OnWaveChanged;
 
         public EnemyWaveSpawner(
             WaveConfig config, 
-            ObjectPool<Enemy> enemyPool, 
+            EnemyFactory enemyFactory, 
             EnemyManager enemyManager,
             HeroView heroView,
             SignalBus signalBus,
@@ -41,85 +38,96 @@ namespace ArenaShooter.Gameplay.Enemies
             MatchDurationSystem durationSystem)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
-            _enemyPool = enemyPool ?? throw new ArgumentNullException(nameof(enemyPool));
+            _enemyFactory = enemyFactory ?? throw new ArgumentNullException(nameof(enemyFactory));
             _enemyManager = enemyManager ?? throw new ArgumentNullException(nameof(enemyManager));
             _heroTransform = heroView ? heroView.transform : throw new ArgumentNullException(nameof(heroView));
             _signalBus = signalBus ?? throw new ArgumentNullException(nameof(signalBus));
             _durationSystem = durationSystem ?? throw new ArgumentNullException(nameof(durationSystem));
             _arenaBoundsService = arenaBoundsService ?? throw new ArgumentNullException(nameof(arenaBoundsService));
-            
-            _currentSpawnInterval = _config.BaseSpawnInterval;
         }
 
         public void Initialize()
         {
             _onPlayerDiedCache = HandlePlayerDied;
             _signalBus.Subscribe(_onPlayerDiedCache);
+            
+            OnWaveChanged?.Invoke(_currentWaveIndex + 1);
         }
         
         public void Tick()
         {
-            if (!_isSpawningActive) return;
-            
+            if (!_isSpawningActive || _config.Waves.Count == 0) return;
+            if (_currentWaveIndex >= _config.Waves.Count) return;
+
+            WaveSetup currentWaveSetup = _config.Waves[_currentWaveIndex];
             float deltaTime = Time.deltaTime;
-            _spawnCooldownTimer += deltaTime;
             
-            if (_spawnCooldownTimer >= _currentSpawnInterval)
+            _spawnCooldownTimer += deltaTime;
+            if (_spawnCooldownTimer >= currentWaveSetup.SpawnInterval)
             {
                 _spawnCooldownTimer = 0f;
-                SpawnEnemyWavePack();
+                SpawnCurrentWavePack(currentWaveSetup);
             }
             
             float currentMatchTime = _durationSystem.ElapsedTime;
             int totalSecondsPassed = Mathf.FloorToInt(currentMatchTime);
-            int calculatedCurrentWaveSeconds = totalSecondsPassed - ((_currentWave - 1) * _config.WaveDurationSeconds);
+            
+            int accumulatedTimeBeforeCurrent = 0;
+            for (int i = 0; i < _currentWaveIndex; i++)
+            {
+                accumulatedTimeBeforeCurrent += _config.Waves[i].WaveDurationSeconds;
+            }
 
-            if (calculatedCurrentWaveSeconds >= _config.WaveDurationSeconds)
+            int secondsInCurrentWave = totalSecondsPassed - accumulatedTimeBeforeCurrent;
+
+            if (secondsInCurrentWave >= currentWaveSetup.WaveDurationSeconds)
             {
                 AdvanceWave();
             }
         }
 
-        private void SpawnEnemyWavePack()
+        public void ResetState()
+        {
+            _currentWaveIndex = 0;
+            _spawnCooldownTimer = 0f;
+            _isSpawningActive = true;
+            OnWaveChanged?.Invoke(_currentWaveIndex + 1);
+        }
+        
+        private void SpawnCurrentWavePack(in WaveSetup currentWaveSetup)
         {
             if (!_heroTransform) return;
             
-            int enemiesToSpawn = _config.BaseEnemiesPerWave + (_currentWave * 2);
-
-            for (int i = 0; i < enemiesToSpawn; i++)
+            for (int e = 0; e < currentWaveSetup.EnemiesToSpawn.Count; e++)
             {
-                Enemy enemy = _enemyPool.Get();
+                EnemySpawnSetup spawnSetup = currentWaveSetup.EnemiesToSpawn[e];
                 
-                Vector2 randomOffset = UnityEngine.Random.insideUnitCircle.normalized * SPAWN_RAD;
-                Vector3 spawnPosition = _heroTransform.position + new Vector3(randomOffset.x, 0f, randomOffset.y);
-
-                spawnPosition = _arenaBoundsService.ClampToArena(spawnPosition);
-                
-                enemy.Initialize(spawnPosition);
-
-                enemy.Spawn();
-                
-                _enemyManager.AddEnemy(enemy); 
+                for (int i = 0; i < spawnSetup.Count; i++)
+                {
+                    Vector2 randomOffset = UnityEngine.Random.insideUnitCircle.normalized * SPAWN_RAD;
+                    Vector3 spawnPosition = _heroTransform.position + new Vector3(randomOffset.x, 0f, randomOffset.y);
+                    spawnPosition.y = _heroTransform.position.y;
+                    
+                    spawnPosition = _arenaBoundsService.ClampToArena(spawnPosition);
+                    
+                    EnemyEntity enemy = _enemyFactory.Create(spawnPosition, spawnSetup.EnemyConfig);
+                    _enemyManager.AddEnemy(enemy); 
+                }
             }
         }
 
         private void AdvanceWave()
         {
-            _currentWave++;
+            if (_currentWaveIndex + 1 >= _config.Waves.Count) return;
 
-            _currentSpawnInterval = _config.BaseSpawnInterval - (_currentWave * _config.DifficultyScalingFactor);
+            _currentWaveIndex++;
+            _spawnCooldownTimer = 0f;
             
-            OnWaveChanged?.Invoke(_currentWave);
+            OnWaveChanged?.Invoke(_currentWaveIndex + 1);
         }
         
-        private void HandlePlayerDied(PlayerDiedSignal signal)
-        {
-            _isSpawningActive = false;
-        }
-
-        public void Dispose()
-        {
-            _signalBus.Unsubscribe(_onPlayerDiedCache);
-        }
+        private void HandlePlayerDied(PlayerDiedSignal signal) => _isSpawningActive = false;
+        
+        public void Dispose() => _signalBus.Unsubscribe(_onPlayerDiedCache);
     }
 }

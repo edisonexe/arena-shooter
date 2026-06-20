@@ -1,21 +1,36 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace ArenaShooter.Configs.Enemies
 {
+    [Serializable]
+    public struct EnemySpawnSetup
+    {
+        [SerializeField] private EnemyConfig _enemyConfig;
+        [SerializeField] private int _count;
+
+        public EnemyConfig EnemyConfig => _enemyConfig;
+        public int Count => _count;
+    }
+
+    [Serializable]
+    public struct WaveSetup
+    {
+        [SerializeField] private int _waveDurationSeconds;
+        [SerializeField] private float _spawnInterval;
+        [SerializeField] private List<EnemySpawnSetup> _enemiesToSpawn;
+
+        public int WaveDurationSeconds => _waveDurationSeconds;
+        public float SpawnInterval => _spawnInterval;
+        public List<EnemySpawnSetup> EnemiesToSpawn => _enemiesToSpawn;
+    }
+
     [CreateAssetMenu(fileName = "WaveConfig", menuName = "Configs/Enemies/WaveConfig")]
     public class WaveConfig : ScriptableObject
     {
-        [Header("Spawn Intervals")]
-        [SerializeField, Min(1f)] private float _baseSpawnInterval = 2.0f;
-        [SerializeField, Min(10f)] private float _difficultyScalingFactor = 0.05f;
+        [SerializeField] private List<WaveSetup> _waves;
 
-        [Header("Wave Limits")]
-        [SerializeField] private int _baseEnemiesPerWave = 5;
-        [SerializeField] private int _waveDurationSeconds = 60;
-
-        public float BaseSpawnInterval => _baseSpawnInterval;
-        public float DifficultyScalingFactor => _difficultyScalingFactor;
-        public int BaseEnemiesPerWave => _baseEnemiesPerWave;
-        public int WaveDurationSeconds => _waveDurationSeconds;
+        public List<WaveSetup> Waves => _waves;
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using ArenaShooter.Gameplay.Hero;
-using ArenaShooter.Infrastructure.Pooling;
 using ArenaShooter.Infrastructure.Reset;
 using ArenaShooter.Infrastructure.Signals;
 using UnityEngine;
@@ -11,19 +10,20 @@ namespace ArenaShooter.Gameplay.Enemies
 {
     public class EnemyManager : ITickable, IResettable
     {
-        private readonly ObjectPool<Enemy> _enemyPool;
+        private readonly EnemyFactory _enemyFactory;
         private readonly HeroView _heroView;
         private readonly SignalBus _signalBus;
 
-        private readonly List<Enemy> _activeEnemies = new(256);
+        private readonly List<EnemyEntity> _activeEnemies = new(256);
+        private readonly List<EnemyEntity> _despawnBuffer = new(16);
         
         private float _damageTimer;
         private const float DamageInterval = 0.5f;
         private const float AttackRadiusSqr = 1.0f;
 
-        public EnemyManager(ObjectPool<Enemy> enemyPool, HeroView heroView, SignalBus signalBus)
+        public EnemyManager(EnemyFactory enemyFactory, HeroView heroView, SignalBus signalBus)
         {
-            _enemyPool = enemyPool ?? throw new ArgumentNullException(nameof(enemyPool));
+            _enemyFactory = enemyFactory ?? throw new ArgumentNullException(nameof(enemyFactory));
             _heroView = heroView ?? throw new ArgumentNullException(nameof(heroView));
             _signalBus = signalBus ?? throw new ArgumentNullException(nameof(signalBus));
         }
@@ -37,16 +37,15 @@ namespace ArenaShooter.Gameplay.Enemies
             bool canAttackThisFrame = _damageTimer >= DamageInterval;
             if (canAttackThisFrame) _damageTimer = 0f;
 
-            for (int i = _activeEnemies.Count - 1; i >= 0; i--)
+            _despawnBuffer.Clear();
+
+            for (int i = 0; i < _activeEnemies.Count; i++)
             {
-                Enemy enemy = _activeEnemies[i];
+                EnemyEntity enemy = _activeEnemies[i];
 
                 if (!enemy.IsActive)
                 {
-                    _signalBus.Fire(new EnemyKilledSignal(enemy.transform.position, enemy.Config.XpValue));
-                    
-                    _activeEnemies.RemoveAt(i);
-                    _enemyPool.Return(enemy);
+                    _despawnBuffer.Add(enemy);
                     continue;
                 }
 
@@ -54,49 +53,65 @@ namespace ArenaShooter.Gameplay.Enemies
 
                 if (canAttackThisFrame)
                 {
-                    float sqrDistanceToHero = (enemy.transform.position - heroPosition).sqrMagnitude;
+                    Vector3 enemyPosition = enemy.View.Transform.position;
+                    enemyPosition.y = heroPosition.y;
+                    
+                    float sqrDistanceToHero = (enemyPosition - heroPosition).sqrMagnitude;
+                    
                     if (sqrDistanceToHero <= AttackRadiusSqr)
                     {
-                        _signalBus.Fire(new DamageTakenSignal(enemy.Config.Damage, enemy.transform.position));
+                        _signalBus.Fire(new DamageTakenSignal(enemy.Config.Damage, enemy.View.Transform.position));
                     }
                 }
             }
+            
+            for (int i = 0; i < _despawnBuffer.Count; i++)
+            {
+                ProcessEnemyDeath(_despawnBuffer[i]);
+            }
         }
         
-        public void AddEnemy(Enemy enemy)
+        public void AddEnemy(EnemyEntity enemy)
         {
-            if (!enemy) return;
-            
+            if (enemy == null) return;
             _activeEnemies.Add(enemy);
         }
         
-        public Enemy GetClosestEnemy(Vector3 position, float maxRadius)
+        public EnemyEntity GetClosestEnemy(Vector3 position, float maxRadius)
         {
-            Enemy closestEnemy = null;
+            EnemyEntity closestEnemy = null;
             float closestSqrDistance = maxRadius * maxRadius;
 
             for (var i = 0; i < _activeEnemies.Count; i++)
             {
-                Enemy enemy = _activeEnemies[i];
-
+                EnemyEntity enemy = _activeEnemies[i];
                 if (!enemy.IsActive) continue;
 
-                float sqrDistance = (enemy.transform.position - position).sqrMagnitude;
+                Vector3 enemyPosition = enemy.View.Transform.position;
+                enemyPosition.y = position.y;
+                
+                float sqrDistance = (enemyPosition - position).sqrMagnitude;
                 if (sqrDistance < closestSqrDistance)
                 {
                     closestSqrDistance = sqrDistance;
                     closestEnemy = enemy;
                 }
             }
-
             return closestEnemy;
+        }
+
+        private void ProcessEnemyDeath(EnemyEntity enemy)
+        {
+            _signalBus.Fire(new EnemyKilledSignal(enemy.View.Transform.position, enemy.Config.XpValue));
+            _activeEnemies.Remove(enemy);
+            _enemyFactory.Reclaim(enemy);
         }
         
         public void ResetState()
         {
             for (int i = _activeEnemies.Count - 1; i >= 0; i--)
             {
-                _enemyPool.Return(_activeEnemies[i]);
+                _enemyFactory.Reclaim(_activeEnemies[i]);
             }
             _activeEnemies.Clear();
         }

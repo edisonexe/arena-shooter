@@ -16,9 +16,9 @@ namespace ArenaShooter.Services.Combat
 
         public bool CheckBulletHit(Vector3 bulletPosition, float damage)
         {
-            Enemy closestEnemy = _enemyManager.GetClosestEnemy(bulletPosition, HitRadius);
+            EnemyEntity closestEnemy = _enemyManager.GetClosestEnemy(bulletPosition, HitRadius);
 
-            if (closestEnemy)
+            if (closestEnemy != null)
             {
                 closestEnemy.TakeDamage(damage, bulletPosition);
                 return true;
