@@ -631,7 +631,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60f73cc870324bb89623491e0b023547, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArenaShooter.UI.GameOver.GameOverWindowView
-  _contentRoot: {fileID: 1314997863}
+  _contentRoot: {fileID: 1531986774}
   _restartButton: {fileID: 2004658044}
   _menuButton: {fileID: 1314997866}
 --- !u!1 &218861500
@@ -4397,13 +4397,12 @@ MonoBehaviour:
   _heroSpawnPoint: {fileID: 308601356}
   _bulletPrefab: {fileID: 7188943504788321120, guid: 99000734532235048b7cf1140d653201, type: 3}
   _bulletsParent: {fileID: 127525452}
-  _enemyPrefab: {fileID: 1868490016661700242, guid: cc19c8b1c4e03d34b9b947cf58972bbd, type: 3}
   _enemiesParent: {fileID: 637140488}
   _xpGemPrefab: {fileID: 7481930665293502049, guid: 38c5523cfc903e8428f8547ed9ee4cfe, type: 3}
   _xpGemsParent: {fileID: 2045206961}
   _initialBulletCapacity: 128
-  _initialEnemyCapacity: 128
   _initialGemCapacity: 128
+  _initialEnemiesCapacity: 32
   _gameplayHUDView: {fileID: 139674754}
   _upgradeWindowView: {fileID: 1747364245}
   _timerView: {fileID: 139674758}

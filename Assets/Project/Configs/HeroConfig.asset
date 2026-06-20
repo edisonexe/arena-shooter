@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: HeroConfig
   m_EditorClassIdentifier: Assembly-CSharp::ArenaShooter.Configs.HeroConfig
   _moveSpeed: 5
-  _maxHealth: 100
-  _fireRate: 0.5
+  _maxHealth: 50
+  _baseHealthRegen: 0
+  _basePickupRadius: 3

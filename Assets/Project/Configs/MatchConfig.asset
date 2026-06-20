@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9788d8532a3d41ea8da19e4146d4a166, type: 3}
   m_Name: MatchConfig
   m_EditorClassIdentifier: Assembly-CSharp::ArenaShooter.Configs.MatchConfig
-  _survivalDuration: 60
+  _survivalDuration: 300

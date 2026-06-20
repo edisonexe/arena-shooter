@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 411ae649a4bf4165b447e0da5f2b219a, type: 3}
+  m_Name: Tank Enemy
+  m_EditorClassIdentifier: Assembly-CSharp::ArenaShooter.Configs.EnemyConfig
+  _prefab: {fileID: 2739786583674923005, guid: 9c379adf3786b604eb37ae7b8c269d9c, type: 3}
+  _moveSpeed: 2
+  _maxHealth: 60
+  _damage: 25
+  _xpValue: 50
