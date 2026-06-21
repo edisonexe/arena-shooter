@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ArenaShooter.Configs.Upgrades;
 using ArenaShooter.Gameplay.Hero;
-using ArenaShooter.Services.Progression.UpgradesCalculation;
+using ArenaShooter.Services.UpgradesCalculation;
 
 namespace ArenaShooter.Services.Progression
 {

@@ -1,8 +1,7 @@
-﻿using System;
-using ArenaShooter.Configs.Upgrades;
+﻿using ArenaShooter.Configs.Upgrades;
 using ArenaShooter.Gameplay.Hero;
 
-namespace ArenaShooter.Services.Progression.UpgradesCalculation
+namespace ArenaShooter.Services.UpgradesCalculation
 {
     public class MaxHealthCalculation : IUpgradeCalculation
     {

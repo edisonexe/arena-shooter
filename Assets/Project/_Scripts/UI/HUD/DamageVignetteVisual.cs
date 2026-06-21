@@ -7,7 +7,7 @@ using Zenject;
 
 namespace ArenaShooter.UI.HUD
 {
-    public class VolumeVignetteVisual : IInitializable, IDisposable, ITickable
+    public class DamageVignetteVisual : IInitializable, IDisposable, ITickable
     {
         private readonly Volume _globalVolume;
         private readonly SignalBus _signalBus;
@@ -19,7 +19,7 @@ namespace ArenaShooter.UI.HUD
         
         private Action<DamageTakenSignal> _onDamageSignalCache;
 
-        public VolumeVignetteVisual(SignalBus signalBus, Volume globalVolume)
+        public DamageVignetteVisual(SignalBus signalBus, Volume globalVolume)
         {
             _signalBus = signalBus ?? throw new ArgumentNullException(nameof(signalBus));
             _globalVolume = globalVolume ?? throw new ArgumentNullException(nameof(globalVolume));

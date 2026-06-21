@@ -10,7 +10,7 @@ using ArenaShooter.Infrastructure.Reset;
 using ArenaShooter.Services.Combat;
 using ArenaShooter.Services.Gameplay;
 using ArenaShooter.Services.Progression;
-using ArenaShooter.Services.Progression.UpgradesCalculation;
+using ArenaShooter.Services.UpgradesCalculation;
 using ArenaShooter.UI.GameOver;
 using ArenaShooter.UI.HUD;
 using ArenaShooter.UI.Upgrades;
@@ -166,7 +166,7 @@ namespace ArenaShooter.Infrastructure.DI
             Container.BindInterfacesAndSelfTo<GameplayHUDView>().FromInstance(_gameplayHUDView).AsSingle();
             Container.BindInterfacesAndSelfTo<GameplayHUDPresenter>().AsSingle().NonLazy();
             
-            Container.BindInterfacesAndSelfTo<VolumeVignetteVisual>()
+            Container.BindInterfacesAndSelfTo<DamageVignetteVisual>()
                 .AsSingle()
                 .WithArguments(_globalVolume)
                 .NonLazy();
