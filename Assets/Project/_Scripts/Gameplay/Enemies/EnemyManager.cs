@@ -18,9 +18,8 @@ namespace ArenaShooter.Gameplay.Enemies
         private readonly List<EnemyEntity> _despawnBuffer = new(16);
         
         private float _damageTimer;
-        private const float DamageInterval = 0.5f;
-        private const float AttackRadiusSqr = 1.0f;
-
+        private const float DAMAGE_INTERVAL = 0.5f;
+        
         public EnemyManager(EnemyFactory enemyFactory, HeroView heroView, SignalBus signalBus)
         {
             _enemyFactory = enemyFactory ?? throw new ArgumentNullException(nameof(enemyFactory));
@@ -34,11 +33,11 @@ namespace ArenaShooter.Gameplay.Enemies
             Vector3 heroPosition = _heroView.transform.position;
 
             _damageTimer += deltaTime;
-            bool canAttackThisFrame = _damageTimer >= DamageInterval;
+            bool canAttackThisFrame = _damageTimer >= DAMAGE_INTERVAL;
             if (canAttackThisFrame) _damageTimer = 0f;
 
             _despawnBuffer.Clear();
-
+            
             for (int i = 0; i < _activeEnemies.Count; i++)
             {
                 EnemyEntity enemy = _activeEnemies[i];
@@ -48,17 +47,16 @@ namespace ArenaShooter.Gameplay.Enemies
                     _despawnBuffer.Add(enemy);
                     continue;
                 }
-
+                
                 enemy.TickUpdate(heroPosition, deltaTime);
-
+                
                 if (canAttackThisFrame)
                 {
                     Vector3 enemyPosition = enemy.View.Transform.position;
                     enemyPosition.y = heroPosition.y;
-                    
+    
                     float sqrDistanceToHero = (enemyPosition - heroPosition).sqrMagnitude;
-                    
-                    if (sqrDistanceToHero <= AttackRadiusSqr)
+                    if (sqrDistanceToHero <= enemy.Config.AttackRadiusSqr)
                     {
                         _signalBus.Fire(new DamageTakenSignal(enemy.Config.Damage, enemy.View.Transform.position));
                     }
