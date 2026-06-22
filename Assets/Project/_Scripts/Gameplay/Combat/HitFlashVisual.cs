@@ -4,31 +4,41 @@ namespace ArenaShooter.Gameplay.Combat
 {
     public class HitFlashVisual : MonoBehaviour
     {
-        [SerializeField] private MeshRenderer _meshRenderer;
+        [Header("Renderers to Flash (Mesh & Skinned)")]
+        [SerializeField] private Renderer[] _renderers;
         
-        private MaterialPropertyBlock _propertyBlock;
-        private int _baseColorPropertyId;
-        private Color _initialColor;
+        private MaterialPropertyBlock _flashPropertyBlock;
+        private MaterialPropertyBlock _emptyPropertyBlock;
+        
+        private int _emissionColorPropertyId;
         
         private float _flashTimer;
         private float _flashDuration;
         private float _flashCount;
         private bool _isFlashing;
 
+        private void Awake()
+        {
+            _flashPropertyBlock = new MaterialPropertyBlock();
+            _emptyPropertyBlock = new MaterialPropertyBlock();
+            
+            _emissionColorPropertyId = Shader.PropertyToID("_EmissionColor");
+            
+            if (_renderers == null || _renderers.Length == 0)
+            {
+                _renderers = GetComponentsInChildren<Renderer>(true);
+            }
+        }
+
         public void Initialize()
         {
-            _propertyBlock ??= new MaterialPropertyBlock();
-            _baseColorPropertyId = Shader.PropertyToID("_BaseColor");
-            
-            if (_meshRenderer)
-            {
-                _initialColor = _meshRenderer.sharedMaterial.GetColor(_baseColorPropertyId);
-            }
+            _isFlashing = false;
+            _flashTimer = 0f;
         }
         
         public void PlayFlash(float duration, int flashes = 3)
         {
-            if (!_meshRenderer) return;
+            if (_renderers == null || _renderers.Length == 0) return;
 
             _flashDuration = duration;
             _flashCount = flashes;
@@ -51,26 +61,40 @@ namespace ArenaShooter.Gameplay.Combat
 
             float progress = _flashTimer / _flashDuration;
             float wave = Mathf.Abs(Mathf.Sin(progress * Mathf.PI * _flashCount));
-            
-            Color currentFlashColor = Color.Lerp(_initialColor, Color.white, wave * progress);
 
-            _meshRenderer.GetPropertyBlock(_propertyBlock);
-            _propertyBlock.SetColor(_baseColorPropertyId, currentFlashColor);
-            _meshRenderer.SetPropertyBlock(_propertyBlock);
+            float flashIntensity = wave * progress * 2f; 
+            Color flashColor = new Color(flashIntensity, flashIntensity, flashIntensity, 1f);
+
+            int count = _renderers.Length;
+            for (int i = 0; i < count; i++)
+            {
+                if (_renderers[i] == null) continue;
+
+                _flashPropertyBlock.SetColor(_emissionColorPropertyId, flashColor);
+                _renderers[i].SetPropertyBlock(_flashPropertyBlock);
+            }
         }
 
-        private void ResetFlash()
+        public void ResetFlash()
         {
-            if (!_meshRenderer) return;
+            if (_renderers == null) return;
             
-            _meshRenderer.GetPropertyBlock(_propertyBlock);
-            _propertyBlock.SetColor(_baseColorPropertyId, _initialColor);
-            _meshRenderer.SetPropertyBlock(_propertyBlock);
+            int count = _renderers.Length;
+            for (int i = 0; i < count; i++)
+            {
+                if (_renderers[i] != null)
+                {
+                    _renderers[i].SetPropertyBlock(_emptyPropertyBlock);
+                }
+            }
         }
 
         private void OnValidate()
         {
-            if (!_meshRenderer) _meshRenderer = GetComponent<MeshRenderer>();
+            if (_renderers == null || _renderers.Length == 0)
+            {
+                _renderers = GetComponentsInChildren<Renderer>(true);
+            }
         }
     }
 }
