@@ -127,6 +127,8 @@ namespace ArenaShooter.Infrastructure.DI
             Container.BindInterfacesAndSelfTo<EnemyManager>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<EnemyWaveSpawner>().AsSingle().NonLazy();
             Container.BindInterfacesAndSelfTo<XPGemManager>().AsSingle().NonLazy();
+            
+            Container.BindInterfacesTo<ArenaBoundarySystem>().AsSingle().NonLazy();
         }
 
         private void InstallHero()

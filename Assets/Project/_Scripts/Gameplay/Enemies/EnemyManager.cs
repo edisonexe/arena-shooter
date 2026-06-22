@@ -20,6 +20,8 @@ namespace ArenaShooter.Gameplay.Enemies
         private float _damageTimer;
         private const float DAMAGE_INTERVAL = 0.5f;
         
+        public List<EnemyEntity> ActiveEnemies => _activeEnemies;
+        
         public EnemyManager(EnemyFactory enemyFactory, HeroView heroView, SignalBus signalBus)
         {
             _enemyFactory = enemyFactory ?? throw new ArgumentNullException(nameof(enemyFactory));
