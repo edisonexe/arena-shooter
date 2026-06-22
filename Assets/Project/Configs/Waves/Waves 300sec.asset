@@ -1,0 +1,99 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4de848f1e10d441ea559908555a22f5c, type: 3}
+  m_Name: Waves 300sec
+  m_EditorClassIdentifier: Assembly-CSharp::ArenaShooter.Configs.Enemies.WaveConfig
+  _waves:
+  - _waveDurationSeconds: 30
+    _spawnInterval: 3
+    _enemiesToSpawn:
+    - _enemyConfig: {fileID: 11400000, guid: a959a23c5c21efd4290b8ce3947d0094, type: 2}
+      _count: 5
+  - _waveDurationSeconds: 20
+    _spawnInterval: 1.5
+    _enemiesToSpawn:
+    - _enemyConfig: {fileID: 11400000, guid: a959a23c5c21efd4290b8ce3947d0094, type: 2}
+      _count: 6
+  - _waveDurationSeconds: 30
+    _spawnInterval: 4
+    _enemiesToSpawn:
+    - _enemyConfig: {fileID: 11400000, guid: a959a23c5c21efd4290b8ce3947d0094, type: 2}
+      _count: 4
+    - _enemyConfig: {fileID: 11400000, guid: 28087360bbc0bff41820d225fb634ced, type: 2}
+      _count: 3
+  - _waveDurationSeconds: 20
+    _spawnInterval: 5
+    _enemiesToSpawn:
+    - _enemyConfig: {fileID: 11400000, guid: 747dd9df5abe08c4ca9698534f58db4f, type: 2}
+      _count: 2
+    - _enemyConfig: {fileID: 11400000, guid: a959a23c5c21efd4290b8ce3947d0094, type: 2}
+      _count: 5
+  - _waveDurationSeconds: 30
+    _spawnInterval: 6
+    _enemiesToSpawn:
+    - _enemyConfig: {fileID: 11400000, guid: 28087360bbc0bff41820d225fb634ced, type: 2}
+      _count: 4
+    - _enemyConfig: {fileID: 11400000, guid: 7df7397a93e1f424bbef69a814e99586, type: 2}
+      _count: 2
+  - _waveDurationSeconds: 20
+    _spawnInterval: 2.5
+    _enemiesToSpawn:
+    - _enemyConfig: {fileID: 11400000, guid: 747dd9df5abe08c4ca9698534f58db4f, type: 2}
+      _count: 2
+    - _enemyConfig: {fileID: 11400000, guid: a959a23c5c21efd4290b8ce3947d0094, type: 2}
+      _count: 7
+  - _waveDurationSeconds: 30
+    _spawnInterval: 4
+    _enemiesToSpawn:
+    - _enemyConfig: {fileID: 11400000, guid: 7df7397a93e1f424bbef69a814e99586, type: 2}
+      _count: 1
+    - _enemyConfig: {fileID: 11400000, guid: a959a23c5c21efd4290b8ce3947d0094, type: 2}
+      _count: 6
+    - _enemyConfig: {fileID: 11400000, guid: 28087360bbc0bff41820d225fb634ced, type: 2}
+      _count: 3
+  - _waveDurationSeconds: 20
+    _spawnInterval: 1.2
+    _enemiesToSpawn:
+    - _enemyConfig: {fileID: 11400000, guid: a959a23c5c21efd4290b8ce3947d0094, type: 2}
+      _count: 9
+  - _waveDurationSeconds: 30
+    _spawnInterval: 5
+    _enemiesToSpawn:
+    - _enemyConfig: {fileID: 11400000, guid: 7df7397a93e1f424bbef69a814e99586, type: 2}
+      _count: 3
+    - _enemyConfig: {fileID: 11400000, guid: 28087360bbc0bff41820d225fb634ced, type: 2}
+      _count: 5
+  - _waveDurationSeconds: 20
+    _spawnInterval: 3
+    _enemiesToSpawn:
+    - _enemyConfig: {fileID: 11400000, guid: 747dd9df5abe08c4ca9698534f58db4f, type: 2}
+      _count: 4
+    - _enemyConfig: {fileID: 11400000, guid: a959a23c5c21efd4290b8ce3947d0094, type: 2}
+      _count: 6
+  - _waveDurationSeconds: 30
+    _spawnInterval: 4
+    _enemiesToSpawn:
+    - _enemyConfig: {fileID: 11400000, guid: 7df7397a93e1f424bbef69a814e99586, type: 2}
+      _count: 2
+    - _enemyConfig: {fileID: 11400000, guid: 747dd9df5abe08c4ca9698534f58db4f, type: 2}
+      _count: 3
+    - _enemyConfig: {fileID: 11400000, guid: 28087360bbc0bff41820d225fb634ced, type: 2}
+      _count: 6
+  - _waveDurationSeconds: 20
+    _spawnInterval: 1
+    _enemiesToSpawn:
+    - _enemyConfig: {fileID: 11400000, guid: 747dd9df5abe08c4ca9698534f58db4f, type: 2}
+      _count: 3
+    - _enemyConfig: {fileID: 11400000, guid: 28087360bbc0bff41820d225fb634ced, type: 2}
+      _count: 4
+    - _enemyConfig: {fileID: 11400000, guid: a959a23c5c21efd4290b8ce3947d0094, type: 2}
+      _count: 10

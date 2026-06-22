@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 39690f6ebf24453ca5f28f215b678633, type: 3}
-  m_Name: Pickup Radius Boost
+  m_Name: Damage Upgrade
   m_EditorClassIdentifier: Assembly-CSharp::ArenaShooter.Configs.Upgrades.UpgradeConfig
-  _title: Pickup Radius Boost
-  _description: +30% pickup radius
-  _icon: {fileID: 21300000, guid: b4d9966c1f0415b46bd5351f653ba965, type: 3}
-  _type: 5
-  _addPercent: 30
+  _title: Heavy Caliber
+  _description: Increases bullet damage by 25%.
+  _icon: {fileID: 21300000, guid: c0f814166c3479e4fafff6dcb706233d, type: 3}
+  _type: 1
+  _addPercent: 25

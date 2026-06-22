@@ -10,10 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 411ae649a4bf4165b447e0da5f2b219a, type: 3}
-  m_Name: Middle Enemy
+  m_Name: Runner
   m_EditorClassIdentifier: Assembly-CSharp::ArenaShooter.Configs.EnemyConfig
-  _prefab: {fileID: 979034890249254075, guid: cc19c8b1c4e03d34b9b947cf58972bbd, type: 3}
-  _moveSpeed: 3
-  _maxHealth: 20
-  _damage: 10
-  _xpValue: 10
+  _prefab: {fileID: 4674055632330060455, guid: 98e2af615b597e9449f46ecb334f7b36, type: 3}
+  _moveSpeed: 4.5
+  _maxHealth: 15
+  _damage: 6
+  _attackRadius: 0.95
+  _xpValue: 2
+  _separationRadius: 0.3

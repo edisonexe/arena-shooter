@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 108d7d05a7874d299a1b20c8106e119c, type: 3}
   m_Name: HeroConfig
   m_EditorClassIdentifier: Assembly-CSharp::ArenaShooter.Configs.HeroConfig
-  _moveSpeed: 5
-  _maxHealth: 50
-  _baseHealthRegen: 0
-  _basePickupRadius: 10
+  _moveSpeed: 6
+  _maxHealth: 100
+  _baseHealthRegen: 0.5
+  _basePickupRadius: 3.5

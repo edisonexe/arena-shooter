@@ -4393,12 +4393,12 @@ MonoBehaviour:
   _waveConfig: {fileID: 11400000, guid: 393f38ebb876e884eb6dd1276b257ded, type: 2}
   _levelingConfig: {fileID: 11400000, guid: 0d4e3223b725be84fba996774912b91e, type: 2}
   _upgradeDatabase: {fileID: 11400000, guid: 31d4d974cc6e7fe4888fad91aa32796f, type: 2}
-  _heroViewPrefab: {fileID: 7593563798392002025, guid: 355d98916ec452a43aaf7f3ddccbf549, type: 3}
+  _heroViewPrefab: {fileID: 3390637547416131057, guid: 61ed7994a2e51644288198faf6a23e71, type: 3}
   _heroSpawnPoint: {fileID: 308601356}
   _bulletPrefab: {fileID: 7188943504788321120, guid: 99000734532235048b7cf1140d653201, type: 3}
   _bulletsParent: {fileID: 127525452}
   _enemiesParent: {fileID: 637140488}
-  _xpGemPrefab: {fileID: 7481930665293502049, guid: 38c5523cfc903e8428f8547ed9ee4cfe, type: 3}
+  _xpGemPrefab: {fileID: 4630226965321185314, guid: 97626b92319d37746bb33cc282aabb14, type: 3}
   _xpGemsParent: {fileID: 2045206961}
   _initialBulletCapacity: 128
   _initialGemCapacity: 128

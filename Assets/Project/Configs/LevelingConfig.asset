@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f848a6d15e2c41d69ae348f84d3ee6e1, type: 3}
   m_Name: LevelingConfig
   m_EditorClassIdentifier: Assembly-CSharp::ArenaShooter.Configs.LevelingConfig
-  _baseXpToNextLevel: 100
-  _xpMultiplier: 1.2
+  _baseXpToNextLevel: 40
+  _xpMultiplier: 1.18

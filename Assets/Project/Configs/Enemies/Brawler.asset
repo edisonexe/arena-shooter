@@ -10,10 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 411ae649a4bf4165b447e0da5f2b219a, type: 3}
-  m_Name: Tank Enemy
+  m_Name: Brawler
   m_EditorClassIdentifier: Assembly-CSharp::ArenaShooter.Configs.EnemyConfig
-  _prefab: {fileID: 2739786583674923005, guid: 9c379adf3786b604eb37ae7b8c269d9c, type: 3}
-  _moveSpeed: 2
-  _maxHealth: 60
-  _damage: 25
-  _xpValue: 50
+  _prefab: {fileID: 8031977511593023474, guid: dda0b4ea4225c57439e258848e6074d5, type: 3}
+  _moveSpeed: 3.2
+  _maxHealth: 45
+  _damage: 14
+  _attackRadius: 1.2
+  _xpValue: 6
+  _separationRadius: 0.55

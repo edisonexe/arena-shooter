@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace ArenaShooter.Gameplay.Items
 {
-    [RequireComponent(typeof(MeshRenderer))]
     public class XPGem : MonoBehaviour, IPoolable<XPGem>
     {
         [SerializeField] private MeshRenderer _meshRenderer;

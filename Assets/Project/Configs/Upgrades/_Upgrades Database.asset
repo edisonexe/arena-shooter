@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f444782c1f5447e80cb3f17d95dfc93, type: 3}
-  m_Name: Upgrade Database
+  m_Name: _Upgrades Database
   m_EditorClassIdentifier: Assembly-CSharp::ArenaShooter.Configs.Upgrades.UpgradeDatabase
   _allUpgrades:
   - {fileID: 11400000, guid: 2ba307d93deb7f54fb3b272b1dc90481, type: 2}
