@@ -4,10 +4,10 @@ namespace ArenaShooter.Gameplay.Combat
 {
     public class DamageVisualTilt : MonoBehaviour
     {
-        [SerializeField] private Transform _visualRoot;
+        [SerializeField] private Transform _tiltRoot;
         
         private float _tiltAngle;
-        private Vector3 _worldTiltAxis;
+        private Vector3 _localTiltAxis;
         
         private const float SPRING_STIFFNESS = 130f; 
         private const float SPRING_DAMPING = 24f;    
@@ -15,9 +15,12 @@ namespace ArenaShooter.Gameplay.Combat
         
         public void ApplyDirectionalTilt(Vector3 hitDirection)
         {
-            if (!_visualRoot) return;
+            if (!_tiltRoot) return;
             
-            _worldTiltAxis = Vector3.Cross(Vector3.up, hitDirection).normalized;
+            Transform parentLayer = _tiltRoot.parent ? _tiltRoot.parent : transform;
+            Vector3 localHitDirection = parentLayer.InverseTransformDirection(hitDirection).normalized;
+            
+            _localTiltAxis = Vector3.Cross(Vector3.up, localHitDirection).normalized;
             
             _tiltAngle = 18f; 
             _springVelocity = 0f;
@@ -25,11 +28,12 @@ namespace ArenaShooter.Gameplay.Combat
 
         public void TickTilt(float deltaTime)
         {
-            if (!_visualRoot) return;
+            if (!_tiltRoot) return;
             if (Mathf.Abs(_tiltAngle) < 0.05f && Mathf.Abs(_springVelocity) < 0.05f)
             {
                 _tiltAngle = 0f;
                 _springVelocity = 0f;
+                _tiltRoot.localRotation = Quaternion.identity;
                 return;
             }
 
@@ -43,12 +47,12 @@ namespace ArenaShooter.Gameplay.Combat
                 _springVelocity = 0f;
             }
 
-            _visualRoot.localRotation = Quaternion.Inverse(transform.rotation) * Quaternion.AngleAxis(_tiltAngle, _worldTiltAxis) * transform.rotation;
+            _tiltRoot.localRotation = Quaternion.AngleAxis(_tiltAngle, _localTiltAxis);
         }
 
         private void OnValidate()
         {
-            if (!_visualRoot) Debug.LogError($"[DamageVisualTilt] VisualRoot Transform is missing on '{name}'!", this);
+            if (!_tiltRoot) Debug.LogError($"[DamageVisualTilt] Tilt Root Transform is missing on '{name}'!", this);
         }
     }
 }

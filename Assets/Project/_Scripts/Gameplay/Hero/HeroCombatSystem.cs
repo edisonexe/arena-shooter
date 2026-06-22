@@ -24,6 +24,8 @@ namespace ArenaShooter.Gameplay.Hero
 
         public void Tick()
         {
+            if (_view.VisualTilt) _view.VisualTilt.TickTilt(Time.deltaTime);
+            
             _weapon.TickWeapon(_view.Rigidbody.position, _view.FirePoint, _onTargetLockedCache);
         }
     }

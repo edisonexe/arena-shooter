@@ -25,8 +25,6 @@ namespace ArenaShooter.Gameplay.Hero
 
         public void Tick()
         {
-            if (_view.VisualTilt) _view.VisualTilt.TickTilt(Time.deltaTime);
-            
             if (!_hasLookTarget || !_view.VisualRoot) return;
 
             Vector3 direction = _lookTargetPosition - _view.Rigidbody.position;
