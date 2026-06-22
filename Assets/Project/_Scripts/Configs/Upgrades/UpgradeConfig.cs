@@ -9,6 +9,7 @@ namespace ArenaShooter.Configs.Upgrades
         [SerializeField] private string _description;
         [SerializeField] private Sprite _icon;
         [SerializeField] private UpgradeType _type;
+        [Tooltip("Additional upgrade value as a percentage")]
         [SerializeField] private float _addPercent;
 
         public string Title => _title;
