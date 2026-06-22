@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using ArenaShooter.Configs;
 using ArenaShooter.Infrastructure.Pooling;
 using UnityEngine;
+using Zenject;
 
 namespace ArenaShooter.Gameplay.Enemies
 {
     public class EnemyFactory
     {
+        private readonly DiContainer _container;
         private readonly Transform _poolsParent;
         private readonly Dictionary<EnemyView, ObjectPool<EnemyView>> _poolsMap = new(8);
         private readonly int _initialCapacity;
         
-        public EnemyFactory(Transform poolsParent, int initialCapacity)
+        public EnemyFactory(DiContainer container, Transform poolsParent, int initialCapacity)
         {
+            _container = container ?? throw new ArgumentNullException(nameof(container));
             _poolsParent = poolsParent ?? throw new ArgumentNullException(nameof(poolsParent));
             _initialCapacity = initialCapacity;
         }
@@ -30,7 +33,7 @@ namespace ArenaShooter.Gameplay.Enemies
             view.Initialize();
             view.Spawn();
             
-            return new EnemyEntity(view, enemyConfig);
+            return _container.Instantiate<EnemyEntity>(new object[] { view, enemyConfig });
         }
 
         public void Reclaim(EnemyEntity enemy)

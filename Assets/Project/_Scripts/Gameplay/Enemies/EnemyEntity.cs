@@ -9,6 +9,7 @@ namespace ArenaShooter.Gameplay.Enemies
     {
         private readonly EnemyView _view;
         private readonly EnemyConfig _config;
+        private readonly EnemyMover _mover;
 
         private float _currentHealth;
 
@@ -17,11 +18,14 @@ namespace ArenaShooter.Gameplay.Enemies
         public EnemyConfig Config => _config;
         public EnemyView View => _view;
         public bool IsActive { get; private set; }
-
-        public EnemyEntity(EnemyView view, EnemyConfig config)
+        
+        public EnemyEntity(EnemyView view, EnemyConfig config, EnemyMover mover)
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));
             _config = config ?? throw new ArgumentNullException(nameof(config));
+            _mover = mover ?? throw new ArgumentNullException(nameof(mover));
+            
+            _mover.Configure(_view.Transform, _config.MoveSpeed);
 
             _currentHealth = _config.MaxHealth;
             IsActive = true;
@@ -45,18 +49,7 @@ namespace ArenaShooter.Gameplay.Enemies
             if (!IsActive) return;
 
             _view.TickVisuals(deltaTime);
-
-            Transform viewTransform = _view.Transform;
-            Vector3 currentPosition = viewTransform.position;
-            Vector3 direction = targetPosition - currentPosition;
-            direction.y = 0f;
-
-            if (direction.sqrMagnitude > 0.001f)
-            {
-                direction.Normalize();
-                viewTransform.forward = direction;
-                viewTransform.Translate(direction * (_config.MoveSpeed * deltaTime), Space.World);
-            }
+            _mover.MoveTowards(targetPosition, deltaTime);
         }
 
         private void Despawn()
