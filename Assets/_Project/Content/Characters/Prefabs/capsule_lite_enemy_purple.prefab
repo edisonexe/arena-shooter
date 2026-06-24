@@ -142,6 +142,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4119065650731865666}
   - component: {fileID: 4004788722808657682}
+  - component: {fileID: 1034227004513052036}
   - component: {fileID: 8031977511593023474}
   - component: {fileID: 1026105072035772696}
   - component: {fileID: 4492989140623073528}
@@ -175,7 +176,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3604690323277777964}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: a37ba6b458055ed46a755af2b4baac58, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -191,6 +192,33 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!54 &1034227004513052036
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3604690323277777964}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 116
+  m_CollisionDetection: 0
 --- !u!114 &8031977511593023474
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -213,6 +241,7 @@ MonoBehaviour:
   - {fileID: 4288981371058049261}
   - {fileID: 1320757514234897840}
   _collider: {fileID: 4004788722808657682}
+  _rigidbody: {fileID: 1034227004513052036}
   _visualTilt: {fileID: 1026105072035772696}
   _hitFlash: {fileID: 4492989140623073528}
 --- !u!114 &1026105072035772696

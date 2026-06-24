@@ -18,4 +18,4 @@ MonoBehaviour:
   _damage: 6
   _attackRadius: 0.95
   _xpValue: 2
-  _separationRadius: 0.3
+  _separationRadius: 1
