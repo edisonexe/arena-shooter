@@ -11,13 +11,9 @@ namespace ArenaShooter.Features.Hero.Configs
         [SerializeField, Min(0f)] private float _baseHealthRegen = 0.5f;
         [SerializeField, Min(1f)] private float _basePickupRadius = 3f;
         
-        [Header("Spatial System Settings")]
-        [SerializeField, Min(0.01f)] private float _separationRadius = 0.5f;
-        
         public float MoveSpeed => _moveSpeed;
         public float MaxHealth => _maxHealth;
         public float BaseHealthRegen => _baseHealthRegen;
         public float BasePickupRadius => _basePickupRadius;
-        public float SeparationRadius => _separationRadius;
     }
 }
