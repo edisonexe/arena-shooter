@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace ArenaShooter.Features.Enemies.Components
 {
-    [RequireComponent(typeof(Collider), typeof(DamageVisualTilt), typeof(HitFlashVisual))]
+    [RequireComponent(typeof(Collider), typeof(Rigidbody), typeof(DamageVisualTilt))]
+    [RequireComponent(typeof(HitFlashVisual), typeof(Rigidbody))]
     public class EnemyView : MonoBehaviour, IPoolable<EnemyView>
     {
         [Header("Renderers Configuration")]
@@ -12,11 +13,13 @@ namespace ArenaShooter.Features.Enemies.Components
 
         [Header("Physics & Visual Components")]
         [SerializeField] private Collider _collider;
+        [SerializeField] private Rigidbody _rigidbody;
         [SerializeField] private DamageVisualTilt _visualTilt;
         [SerializeField] private HitFlashVisual _hitFlash;
 
         private Transform _cachedTransform;
         public Transform Transform => _cachedTransform ??= transform;
+        public Rigidbody Rigidbody => _rigidbody;
         
         public void Initialize()
         {
@@ -28,13 +31,24 @@ namespace ArenaShooter.Features.Enemies.Components
         {
             SetRenderersVisible(true);
             if (_collider) _collider.enabled = true;
+            if (_rigidbody) _rigidbody.isKinematic = false;
         }
 
         public void Despawn()
         {
             SetRenderersVisible(false);
             if (_collider) _collider.enabled = false;
-            
+
+            if (_rigidbody)
+            {
+                _rigidbody.isKinematic = false;
+
+                _rigidbody.linearVelocity = Vector3.zero;
+                _rigidbody.angularVelocity = Vector3.zero;
+
+                _rigidbody.isKinematic = true;
+            }
+
             if (_hitFlash) _hitFlash.ResetFlash();
         }
 
@@ -85,6 +99,9 @@ namespace ArenaShooter.Features.Enemies.Components
 
             if (!(_collider ??= GetComponent<Collider>())) 
                 Debug.LogError($"[EnemyView] Collider is missing on '{name}'!", this);
+            
+            if (!(_rigidbody ??= GetComponent<Rigidbody>())) 
+                Debug.LogError($"[EnemyView] Rigidbody is missing on '{name}'!", this);
             
             if (!(_visualTilt ??= GetComponent<DamageVisualTilt>())) 
                 Debug.LogError($"[EnemyView] DamageVisualTilt is missing on '{name}'!", this);

@@ -1,31 +1,46 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace ArenaShooter.Features.Enemies.Components
 {
     public class EnemyMover
     {
-        private Transform _transform;
+        private Rigidbody _rigidbody;
         private float _moveSpeed;
         
-        public void Configure(Transform transform, float moveSpeed)
+        public void Configure(Rigidbody rigidbody, float moveSpeed)
         {
-            _transform = transform;
+            _rigidbody = rigidbody ?? throw new ArgumentNullException(nameof(rigidbody));
             _moveSpeed = moveSpeed;
         }
 
-        public void MoveTowards(Vector3 targetPosition, float deltaTime)
+        public void MoveTowards(Vector3 targetPosition)
         {
-            if (_transform == null) return;
+            if (ReferenceEquals(_rigidbody, null) || !_rigidbody) return;
 
-            Vector3 currentPosition = _transform.position;
+            Vector3 currentPosition = _rigidbody.position;
             Vector3 direction = targetPosition - currentPosition;
             direction.y = 0f;
 
             if (direction.sqrMagnitude > 0.001f)
             {
-                direction.Normalize();
-                _transform.forward = direction;
-                _transform.Translate(direction * (_moveSpeed * deltaTime), Space.World);
+                Vector3 moveDirection = direction.normalized;
+                
+                _rigidbody.transform.forward = moveDirection;
+                
+                _rigidbody.linearVelocity = moveDirection * _moveSpeed;
+            }
+            else
+            {
+                _rigidbody.linearVelocity = Vector3.zero;
+            }
+        }
+
+        public void Stop()
+        {
+            if (_rigidbody)
+            {
+                _rigidbody.linearVelocity = Vector3.zero;
             }
         }
     }

@@ -25,7 +25,7 @@ namespace ArenaShooter.Features.Enemies.Components
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _mover = mover ?? throw new ArgumentNullException(nameof(mover));
             
-            _mover.Configure(_view.Transform, _config.MoveSpeed);
+            _mover.Configure(_view.Rigidbody, _config.MoveSpeed);
 
             _currentHealth = _config.MaxHealth;
             IsActive = true;
@@ -40,16 +40,21 @@ namespace ArenaShooter.Features.Enemies.Components
 
             if (_currentHealth <= 0f)
             {
+                _mover.Stop();
                 Despawn();
             }
         }
-
-        public void TickUpdate(Vector3 targetPosition, float deltaTime)
+        
+        public void TickVisuals(float deltaTime)
         {
             if (!IsActive) return;
-
             _view.TickVisuals(deltaTime);
-            _mover.MoveTowards(targetPosition, deltaTime);
+        }
+        
+        public void FixedTickUpdate(Vector3 targetPosition)
+        {
+            if (!IsActive) return;
+            _mover.MoveTowards(targetPosition);
         }
 
         private void Despawn()

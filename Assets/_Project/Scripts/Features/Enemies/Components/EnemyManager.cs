@@ -8,7 +8,7 @@ using Zenject;
 
 namespace ArenaShooter.Features.Enemies.Components
 {
-    public class EnemyManager : ITickable, IResettable
+    public class EnemyManager : ITickable, IFixedTickable, IResettable
     {
         private readonly EnemyFactory _enemyFactory;
         private readonly HeroView _heroView;
@@ -32,7 +32,7 @@ namespace ArenaShooter.Features.Enemies.Components
         public void Tick()
         {
             float deltaTime = Time.deltaTime;
-            Vector3 heroPosition = _heroView.transform.position;
+            Vector3 heroPosition = _heroView.Rigidbody.position;
 
             _damageTimer += deltaTime;
             bool canAttackThisFrame = _damageTimer >= DAMAGE_INTERVAL;
@@ -50,7 +50,7 @@ namespace ArenaShooter.Features.Enemies.Components
                     continue;
                 }
                 
-                enemy.TickUpdate(heroPosition, deltaTime);
+                enemy.TickVisuals(deltaTime);
                 
                 if (canAttackThisFrame)
                 {
@@ -68,6 +68,22 @@ namespace ArenaShooter.Features.Enemies.Components
             for (int i = 0; i < _despawnBuffer.Count; i++)
             {
                 ProcessEnemyDeath(_despawnBuffer[i]);
+            }
+        }
+        
+        public void FixedTick()
+        {
+            if (ReferenceEquals(_heroView, null) || !_heroView) return;
+            
+            Vector3 heroPosition = _heroView.transform.position;
+            
+            int count = _activeEnemies.Count;
+            for (int i = 0; i < count; i++)
+            {
+                EnemyEntity enemy = _activeEnemies[i];
+                if (enemy == null || !enemy.IsActive) continue;
+
+                enemy.FixedTickUpdate(heroPosition);
             }
         }
         
