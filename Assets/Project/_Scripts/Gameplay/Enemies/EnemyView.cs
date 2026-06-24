@@ -15,10 +15,12 @@ namespace ArenaShooter.Gameplay.Enemies
         [SerializeField] private DamageVisualTilt _visualTilt;
         [SerializeField] private HitFlashVisual _hitFlash;
 
-        public Transform Transform => transform;
-
+        private Transform _cachedTransform;
+        public Transform Transform => _cachedTransform ??= transform;
+        
         public void Initialize()
         {
+            _cachedTransform ??= transform;
             if (_hitFlash) _hitFlash.Initialize();
         }
 
@@ -40,7 +42,7 @@ namespace ArenaShooter.Gameplay.Enemies
         {
             if (_visualTilt)
             {
-                Vector3 hitDirection = (transform.position - damageSourcePosition);
+                Vector3 hitDirection = (Transform.position - damageSourcePosition);
                 hitDirection.y = 0f;
 
                 if (hitDirection.sqrMagnitude > 0.001f)

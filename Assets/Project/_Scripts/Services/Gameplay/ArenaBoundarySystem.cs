@@ -24,8 +24,12 @@ namespace ArenaShooter.Services.Gameplay
 
         public void Tick()
         {
-            Transform heroTransform = _heroView.transform;
-            heroTransform.position = _boundsService.ClampToArena(heroTransform.position);
+            Rigidbody heroRb = _heroView.Rigidbody;
+            Vector3 clampedHeroPos = _boundsService.ClampToArena(heroRb.position);
+            if (clampedHeroPos != heroRb.position)
+            {
+                heroRb.position = clampedHeroPos;
+            }
             
             var enemies = _enemyManager.ActiveEnemies;
             for (int i = 0; i < enemies.Count; i++)
