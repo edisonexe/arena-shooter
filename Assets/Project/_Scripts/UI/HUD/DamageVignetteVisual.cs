@@ -14,8 +14,8 @@ namespace ArenaShooter.UI.HUD
         
         private Vignette _vignette;
         private float _currentIntensity;
-        private const float FadeSpeed = 4f;
-        private const float MaxIntensity = 0.45f;
+        private const float FADE_SPEED = 4f;
+        private const float MAX_INTENS = 0.45f;
         
         private Action<DamageTakenSignal> _onDamageSignalCache;
 
@@ -27,12 +27,16 @@ namespace ArenaShooter.UI.HUD
 
         public void Initialize()
         {
-            if (!_globalVolume.profile.TryGet(out _vignette))
+            if (_globalVolume == null) return;
+            
+            VolumeProfile runtimeProfile = _globalVolume.profile;
+            
+            if (!runtimeProfile.TryGet(out _vignette))
             {
-                Debug.LogError("[VolumeVignetteVisual] Vignette override missing in Volume Profile!");
+                Debug.LogError("[DamageVignetteVisual] Vignette override missing in Volume Profile!", _globalVolume);
                 return;
             }
-
+            
             _vignette.intensity.overrideState = true;
             _vignette.intensity.value = 0f;
 
@@ -44,7 +48,7 @@ namespace ArenaShooter.UI.HUD
         {
             _signalBus?.Unsubscribe(_onDamageSignalCache);
             
-            if (_vignette != null)
+            if (_globalVolume != null && !ReferenceEquals(_globalVolume, null))
             {
                 _vignette.intensity.value = 0f;
             }
@@ -54,7 +58,7 @@ namespace ArenaShooter.UI.HUD
         {
             if (_vignette == null || _currentIntensity <= 0f) return;
 
-            _currentIntensity -= FadeSpeed * Time.deltaTime;
+            _currentIntensity -= FADE_SPEED * Time.deltaTime;
 
             if (_currentIntensity < 0f)
             {
@@ -66,7 +70,7 @@ namespace ArenaShooter.UI.HUD
 
         private void HandlePlayerDamage(DamageTakenSignal signal)
         {
-            _currentIntensity = MaxIntensity;
+            _currentIntensity = MAX_INTENS;
         }
     }
 }
