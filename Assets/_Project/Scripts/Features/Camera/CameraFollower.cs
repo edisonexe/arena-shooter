@@ -5,16 +5,12 @@ using Zenject;
 
 namespace ArenaShooter.Features.Camera
 {
-    public class CameraFollower : IFixedTickable, IInitializable
+    public class CameraFollower : ILateTickable, IInitializable
     {
         private readonly UnityEngine.Camera _mainCamera;
         private readonly HeroView _heroView;
 
         private Vector3 _cameraOffset;
-        private Vector3 _currentVelocity;
-        private Vector3 _smoothedPosition;
-        
-        private const float SmoothTime = 0.05f; 
 
         public CameraFollower(HeroView heroView)
         {
@@ -24,26 +20,14 @@ namespace ArenaShooter.Features.Camera
 
         public void Initialize()
         {
-            _cameraOffset = _mainCamera.transform.position - _heroView.transform.position;
-            _smoothedPosition = _mainCamera.transform.position;
+            _cameraOffset = _mainCamera.transform.position - _heroView.CameraAnchor.position;
         }
 
-        public void FixedTick()
+        public void LateTick()
         {
-            if (!_heroView) return;
+            if (ReferenceEquals(_heroView, null) || !_heroView) return;
             
-            Vector3 targetPosition = _heroView.Rigidbody.position + _cameraOffset;
-            
-            _smoothedPosition = Vector3.SmoothDamp(
-                _smoothedPosition,
-                targetPosition,
-                ref _currentVelocity,
-                SmoothTime,
-                float.PositiveInfinity,
-                Time.fixedDeltaTime
-            );
-
-            _mainCamera.transform.position = _smoothedPosition;
+            _mainCamera.transform.position = _heroView.CameraAnchor.position + _cameraOffset;
         }
     }
 }

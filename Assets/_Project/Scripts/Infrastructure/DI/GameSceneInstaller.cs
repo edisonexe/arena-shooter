@@ -1,4 +1,5 @@
 ﻿using ArenaShooter.Features.Camera;
+using ArenaShooter.Features.Camera.Configs;
 using ArenaShooter.Features.Enemies.Components;
 using ArenaShooter.Features.Enemies.Configs;
 using ArenaShooter.Features.Hero.Components;
@@ -30,6 +31,7 @@ namespace ArenaShooter.Infrastructure.DI
         [SerializeField] private WaveConfig _waveConfig;
         [SerializeField] private LevelingConfig _levelingConfig;
         [SerializeField] private UpgradeDatabase _upgradeDatabase;
+        [SerializeField] private CameraConfig _cameraConfig;
         
         [Header("Prefabs & Spawn Points")] 
         [SerializeField] private HeroView _heroViewPrefab;
@@ -43,7 +45,7 @@ namespace ArenaShooter.Infrastructure.DI
         [Header("Pool Capacities")] 
         [SerializeField, Min(0)] private int _initialBulletCapacity = 128;
         [SerializeField, Min(0)] private int _initialGemCapacity = 128;
-        [SerializeField, Min(0)] private int _initialEnemiesCapacity = 32;
+        [SerializeField, Min(0)] private int _initialEnemiesCapacity = 128;
         
         [Header("UI Views")]
         [SerializeField] private GameplayHUDView _gameplayHUDView;
@@ -79,6 +81,7 @@ namespace ArenaShooter.Infrastructure.DI
 
         private void InstallSceneInfrastructure()
         {
+            Container.BindInstance(_cameraConfig).AsSingle();
             Container.BindInterfacesAndSelfTo<CameraFollower>().AsSingle().NonLazy();
         }
 
@@ -146,13 +149,14 @@ namespace ArenaShooter.Infrastructure.DI
                 .FromResolveGetter<HeroView>(view => view.Rigidbody)
                 .AsSingle();
             
+            Container.BindInterfacesTo<HeroCameraAnchorSystem>().AsSingle();
+            
             Container.Bind<HeroMover>().AsSingle();
             Container.Bind<AutoCombatWeapon>().AsSingle();
             
             Container.BindInterfacesAndSelfTo<HeroMovementSystem>().AsSingle();
             
-            Container.Bind<HeroRotationSystem>().AsSingle();
-            Container.Bind<ITickable>().To<HeroRotationSystem>().FromResolve();
+            Container.BindInterfacesAndSelfTo<HeroRotationSystem>().AsSingle();
             
             Container.BindInterfacesAndSelfTo<HeroCombatSystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<HeroHealthSystem>().AsSingle().NonLazy();
@@ -208,6 +212,7 @@ namespace ArenaShooter.Infrastructure.DI
             if (!_weaponConfig) Debug.LogError("[GameSceneInstaller] WeaponConfig is not assigned!", this);
             if (!_waveConfig) Debug.LogError("[GameSceneInstaller] WaveConfig is not assigned!", this);
             if (!_levelingConfig) Debug.LogError("[GameSceneInstaller] LevelingConfig is not assigned!", this);
+            if (!_cameraConfig) Debug.LogError("[GameSceneInstaller] CameraConfig is not assigned!", this);
             if (!_upgradeDatabase) Debug.LogError("[GameSceneInstaller] UpgradeDatabase is not assigned!", this);
             if (!_heroViewPrefab) Debug.LogError("[GameSceneInstaller] HeroViewPrefab is not assigned!", this);
             if (!_heroSpawnPoint) Debug.LogError("[GameSceneInstaller] HeroSpawnPoint is not assigned!", this);

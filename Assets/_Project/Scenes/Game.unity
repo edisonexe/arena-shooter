@@ -4255,6 +4255,7 @@ MonoBehaviour:
   _waveConfig: {fileID: 11400000, guid: 393f38ebb876e884eb6dd1276b257ded, type: 2}
   _levelingConfig: {fileID: 11400000, guid: 0d4e3223b725be84fba996774912b91e, type: 2}
   _upgradeDatabase: {fileID: 11400000, guid: 31d4d974cc6e7fe4888fad91aa32796f, type: 2}
+  _cameraConfig: {fileID: 11400000, guid: 60a53db794f6ca2459c85ff097b57e2f, type: 2}
   _heroViewPrefab: {fileID: 3390637547416131057, guid: 61ed7994a2e51644288198faf6a23e71, type: 3}
   _heroSpawnPoint: {fileID: 308601356}
   _bulletPrefab: {fileID: 7188943504788321120, guid: 99000734532235048b7cf1140d653201, type: 3}
@@ -4264,7 +4265,7 @@ MonoBehaviour:
   _xpGemsParent: {fileID: 2045206961}
   _initialBulletCapacity: 128
   _initialGemCapacity: 128
-  _initialEnemiesCapacity: 32
+  _initialEnemiesCapacity: 128
   _gameplayHUDView: {fileID: 139674754}
   _upgradeWindowView: {fileID: 1747364245}
   _timerView: {fileID: 139674758}
