@@ -4252,7 +4252,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ArenaShooter.Infrastructure.DI.GameSceneInstaller
   _heroConfig: {fileID: 11400000, guid: c08b7e4ff17e1b4438c9c7ae08c6c1cd, type: 2}
   _weaponConfig: {fileID: 11400000, guid: 0375300afeda3674aa72bfa10cdf6720, type: 2}
-  _waveConfig: {fileID: 11400000, guid: a70415f0349f9354683cdac310016ccb, type: 2}
+  _waveConfig: {fileID: 11400000, guid: 393f38ebb876e884eb6dd1276b257ded, type: 2}
   _levelingConfig: {fileID: 11400000, guid: 0d4e3223b725be84fba996774912b91e, type: 2}
   _upgradeDatabase: {fileID: 11400000, guid: 31d4d974cc6e7fe4888fad91aa32796f, type: 2}
   _heroViewPrefab: {fileID: 3390637547416131057, guid: 61ed7994a2e51644288198faf6a23e71, type: 3}
