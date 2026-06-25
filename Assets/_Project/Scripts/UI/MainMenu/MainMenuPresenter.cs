@@ -18,7 +18,12 @@ namespace ArenaShooter.UI.MainMenu
         public void Initialize()
         {
             _view.PlayButton.onClick.AddListener(HandlePlay);
+            
+#if UNITY_WEBGL
+            _view.ExitButton.gameObject.SetActive(false);
+#else
             _view.ExitButton.onClick.AddListener(HandleExit);
+#endif
             
             _view.Show();
         }
@@ -28,7 +33,9 @@ namespace ArenaShooter.UI.MainMenu
             if (_view != null)
             {
                 _view.PlayButton.onClick.RemoveListener(HandlePlay);
+#if !UNITY_WEBGL
                 _view.ExitButton.onClick.RemoveListener(HandleExit);
+#endif
             }
         }
 
