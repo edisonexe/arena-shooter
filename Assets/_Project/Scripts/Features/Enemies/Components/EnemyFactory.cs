@@ -9,14 +9,14 @@ namespace ArenaShooter.Features.Enemies.Components
 {
     public class EnemyFactory
     {
-        private readonly DiContainer _container;
+        private readonly EnemyEntity.Factory _entityFactory;
         private readonly Transform _poolsParent;
         private readonly Dictionary<EnemyView, ObjectPool<EnemyView>> _poolsMap = new(8);
         private readonly int _initialCapacity;
         
-        public EnemyFactory(DiContainer container, Transform poolsParent, int initialCapacity)
+        public EnemyFactory(EnemyEntity.Factory entityFactory, Transform poolsParent, int initialCapacity)
         {
-            _container = container ?? throw new ArgumentNullException(nameof(container));
+            _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
             _poolsParent = poolsParent ?? throw new ArgumentNullException(nameof(poolsParent));
             _initialCapacity = initialCapacity;
         }
@@ -33,7 +33,7 @@ namespace ArenaShooter.Features.Enemies.Components
             view.Initialize();
             view.Spawn();
             
-            return _container.Instantiate<EnemyEntity>(new object[] { view, enemyConfig });
+            return _entityFactory.Create(view, enemyConfig);
         }
 
         public void Reclaim(EnemyEntity enemy)

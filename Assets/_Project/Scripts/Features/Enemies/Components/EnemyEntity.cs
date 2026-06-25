@@ -2,11 +2,14 @@
 using ArenaShooter.Features.CombatVisuals;
 using ArenaShooter.Features.Enemies.Configs;
 using UnityEngine;
+using Zenject;
 
 namespace ArenaShooter.Features.Enemies.Components
 {
     public class EnemyEntity : IDamageable
     {
+        public class Factory : PlaceholderFactory<EnemyView, EnemyConfig, EnemyEntity> { }
+        
         private readonly EnemyView _view;
         private readonly EnemyConfig _config;
         private readonly EnemyMover _mover;
