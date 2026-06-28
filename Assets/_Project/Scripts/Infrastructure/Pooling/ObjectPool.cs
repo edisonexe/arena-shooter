@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ArenaShooter.Infrastructure.Pooling
 {
-    public class ObjectPool<T> where T : MonoBehaviour, IPoolable<T>
+    public class ObjectPool<T> where T : MonoBehaviour, IPoolable
     {
         private readonly T _prefab;
         private readonly Transform _parent;

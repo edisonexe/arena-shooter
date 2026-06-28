@@ -6,7 +6,7 @@ namespace ArenaShooter.Features.Enemies.Components
 {
     [RequireComponent(typeof(Collider), typeof(Rigidbody), typeof(DamageVisualTilt))]
     [RequireComponent(typeof(HitFlashVisual), typeof(Rigidbody))]
-    public class EnemyView : MonoBehaviour, IPoolable<EnemyView>
+    public class EnemyView : MonoBehaviour, IPoolable
     {
         [Header("Renderers Configuration")]
         [SerializeField] private Renderer[] _allRenderers;

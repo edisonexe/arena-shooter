@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ArenaShooter.Features.Weapons.Components
 {
     [RequireComponent(typeof(MeshRenderer), typeof(Collider))]
-    public class Bullet : MonoBehaviour, IPoolable<Bullet>
+    public class Bullet : MonoBehaviour, IPoolable
     {
         [SerializeField] private MeshRenderer _meshRenderer;
         [SerializeField] private Collider _collider;
