@@ -16,7 +16,7 @@ namespace ArenaShooter.Features.Enemies.Components
 
         public void MoveTowards(Vector3 targetPosition)
         {
-            if (ReferenceEquals(_rigidbody, null) || !_rigidbody) return;
+            if (ReferenceEquals(_rigidbody, null) || !_rigidbody || _rigidbody.isKinematic) return;
 
             Vector3 currentPosition = _rigidbody.position;
             Vector3 direction = targetPosition - currentPosition;
@@ -38,7 +38,7 @@ namespace ArenaShooter.Features.Enemies.Components
 
         public void Stop()
         {
-            if (_rigidbody)
+            if (_rigidbody && !_rigidbody.isKinematic)
             {
                 _rigidbody.linearVelocity = Vector3.zero;
             }

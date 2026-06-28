@@ -41,10 +41,11 @@ namespace ArenaShooter.Features.Enemies.Components
 
             if (_rigidbody)
             {
-                _rigidbody.isKinematic = false;
-
-                _rigidbody.linearVelocity = Vector3.zero;
-                _rigidbody.angularVelocity = Vector3.zero;
+                if (!_rigidbody.isKinematic)
+                {
+                    _rigidbody.linearVelocity = Vector3.zero;
+                    _rigidbody.angularVelocity = Vector3.zero;
+                }
 
                 _rigidbody.isKinematic = true;
             }
