@@ -3,10 +3,11 @@ using ArenaShooter.Features.CombatVisuals;
 using ArenaShooter.Features.Enemies.Configs;
 using UnityEngine;
 using Zenject;
+using IPoolable = ArenaShooter.Infrastructure.Pooling.IPoolable;
 
 namespace ArenaShooter.Features.Enemies.Components
 {
-    public class EnemyEntity : IDamageable
+    public class EnemyEntity : IDamageable, IPoolable
     {
         public class Factory : PlaceholderFactory<EnemyView, EnemyConfig, EnemyEntity> { }
         
@@ -43,7 +44,6 @@ namespace ArenaShooter.Features.Enemies.Components
 
             if (_currentHealth <= 0f)
             {
-                _mover.Stop();
                 Despawn();
             }
         }
@@ -60,9 +60,24 @@ namespace ArenaShooter.Features.Enemies.Components
             _mover.MoveTowards(targetPosition);
         }
 
-        private void Despawn()
+        public void Spawn()
+        {
+            _currentHealth = _config.MaxHealth;
+            IsActive = true;
+            _view.Spawn();
+        }
+
+        public void SpawnAt(Vector3 position)
+        {
+            _view.Transform.position = position;
+            Spawn();
+        }
+        
+        public void Despawn()
         {
             IsActive = false;
+            _mover.Stop();
+            _view.Despawn();
             OnDespawnRequested?.Invoke(this);
         }
     }
