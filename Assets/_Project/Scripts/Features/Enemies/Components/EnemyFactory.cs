@@ -9,14 +9,15 @@ namespace ArenaShooter.Features.Enemies.Components
 {
     public class EnemyFactory
     {
-        private readonly EnemyEntity.Factory _entityFactory;
+        private readonly IInstantiator _instantiator;
         private readonly Transform _poolsParent;
-        private readonly Dictionary<EnemyView, ObjectPool<EnemyView>> _poolsMap = new(8);
         private readonly int _initialCapacity;
         
-        public EnemyFactory(EnemyEntity.Factory entityFactory, Transform poolsParent, int initialCapacity)
+        private readonly Dictionary<EnemyConfig, ClassPool<EnemyEntity>> _poolsMap = new(8);
+        
+        public EnemyFactory(IInstantiator instantiator, Transform poolsParent, int initialCapacity)
         {
-            _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
+            _instantiator = instantiator ?? throw new ArgumentNullException(nameof(instantiator));
             _poolsParent = poolsParent ?? throw new ArgumentNullException(nameof(poolsParent));
             _initialCapacity = initialCapacity;
         }
@@ -24,40 +25,43 @@ namespace ArenaShooter.Features.Enemies.Components
         public EnemyEntity Create(Vector3 spawnPosition, EnemyConfig enemyConfig)
         {
             if (enemyConfig == null) throw new ArgumentNullException(nameof(enemyConfig));
-            if (enemyConfig.Prefab == null) throw new MissingReferenceException(enemyConfig.name);
             
-            ObjectPool<EnemyView> pool = GetOrCreatePool(enemyConfig.Prefab);
+            ClassPool<EnemyEntity> pool = GetOrCreatePool(enemyConfig);
 
-            EnemyView view = pool.Get();
-            view.Transform.position = spawnPosition;
-            view.Initialize();
-            view.Spawn();
+            EnemyEntity entity = pool.Get();
+            entity.SpawnAt(spawnPosition);
             
-            return _entityFactory.Create(view, enemyConfig);
+            return entity;
         }
 
         public void Reclaim(EnemyEntity enemy)
         {
             if (enemy == null) return;
 
-            enemy.View.Despawn();
-            
-            if (_poolsMap.TryGetValue(enemy.Config.Prefab, out ObjectPool<EnemyView> pool))
+            if (_poolsMap.TryGetValue(enemy.Config, out ClassPool<EnemyEntity> pool))
             {
-                pool.Return(enemy.View);
+                pool.Return(enemy);
             }
         }
 
-        private ObjectPool<EnemyView> GetOrCreatePool(EnemyView prefab)
+        private ClassPool<EnemyEntity> GetOrCreatePool(EnemyConfig config)
         {
-            if (_poolsMap.TryGetValue(prefab, out ObjectPool<EnemyView> existingPool))
+            if (_poolsMap.TryGetValue(config, out ClassPool<EnemyEntity> existingPool))
             {
                 return existingPool;
             }
             
-            var newPool = new ObjectPool<EnemyView>(prefab, _poolsParent, _initialCapacity);
-            _poolsMap[prefab] = newPool;
+            var newPool = new ClassPool<EnemyEntity>(() => CreateNewEntity(config), _initialCapacity);
+            _poolsMap[config] = newPool;
             return newPool;
+        }
+
+        private EnemyEntity CreateNewEntity(EnemyConfig config)
+        {
+            EnemyView view = UnityEngine.Object.Instantiate(config.Prefab, _poolsParent);
+            view.Initialize();
+            
+            return _instantiator.Instantiate<EnemyEntity>(new object[] { view, config });
         }
     }
 }

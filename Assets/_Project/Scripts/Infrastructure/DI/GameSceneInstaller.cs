@@ -116,8 +116,6 @@ namespace ArenaShooter.Infrastructure.DI
                 .AsSingle()
                 .WithArguments(_xpGemPrefab, _xpGemsParent, _initialGemCapacity);
             
-            Container.BindFactory<EnemyView, EnemyConfig, EnemyEntity, EnemyEntity.Factory>();
-            
             Container.Bind<EnemyMover>().AsTransient();
             
             Container.Bind<EnemyFactory>()
